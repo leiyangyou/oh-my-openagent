@@ -106,6 +106,7 @@ export async function handleSessionDeletedEvent(args: {
   args.firstMessageVariantGate.clear(sessionID);
   clearSessionModel(sessionID);
   clearSessionPromptParams(sessionID);
+  args.managers.modelMapController.deleteSession(sessionID);
   syncSubagentSessions.delete(sessionID);
   await dispatchOpenClawSessionEvent({ ...args, rawEvent: "session.deleted", sessionID });
   if (wasSyncSubagentSession) subagentSessions.delete(sessionID);

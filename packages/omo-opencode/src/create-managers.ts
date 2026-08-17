@@ -6,6 +6,7 @@ import type { SubagentSessionCreatedEvent } from "./features/background-agent"
 import { BackgroundManager } from "./features/background-agent"
 import type { MonitorManager } from "./features/monitor"
 import { createMonitorManager } from "./features/monitor"
+import { createModelMapController, type ModelMapController } from "./features/model-map"
 import { SkillMcpManager } from "./features/skill-mcp-manager"
 import { cleanupSessionTeamRuns } from "./features/team-mode/team-runtime/session-cleanup"
 import { lookupTeamSession } from "./features/team-mode/team-session-registry"
@@ -55,6 +56,7 @@ export type Managers = {
   skillMcpManager: SkillMcpManager
   configHandler: ReturnType<typeof createConfigHandler>
   modelFallbackControllerAccessor: ModelFallbackControllerAccessor
+  modelMapController: ModelMapController
   tuiStateMirror?: TuiStateMirror
   monitorManager?: MonitorManager
 }
@@ -93,6 +95,12 @@ export function createManagers(args: {
     shouldSkipSession: (sessionId) => lookupTeamSession(sessionId) !== undefined,
   })
   const modelFallbackControllerAccessor = createModelFallbackControllerAccessor()
+  const modelMapController = createModelMapController({
+    directory: ctx.directory,
+    session: {
+      get: async (input) => ctx.client.session.get(input),
+    },
+  })
   let backgroundManager: BackgroundManager | undefined
   let tuiStateMirror: TuiStateMirror | undefined
 
@@ -221,6 +229,7 @@ export function createManagers(args: {
     skillMcpManager,
     configHandler,
     modelFallbackControllerAccessor,
+    modelMapController,
     tuiStateMirror,
     monitorManager,
   }
