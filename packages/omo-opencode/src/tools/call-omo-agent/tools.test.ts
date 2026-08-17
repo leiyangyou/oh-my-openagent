@@ -344,6 +344,60 @@ describe("createCallOmoAgent", () => {
     })
   })
 
+  test("#given an active model map #when direct-agent work dispatches #then the agent route replaces the base model", async () => {
+    const launch = mock((_input: { model?: { providerID: string; modelID: string } }) => Promise.resolve({
+      id: "task-model-map",
+      sessionId: "sub-session",
+      description: "Mapped task",
+      agent: "explore",
+      status: "pending",
+    }))
+    const resolve = mock(async () => ({
+      concurrencyKey: "openai/gpt-5.6-sol",
+      mappedKey: "explore",
+      model: { providerID: "openai", modelID: "gpt-5.6-sol" },
+      presetName: "quality",
+      revision: 3,
+      scope: "session" as const,
+      source: "model-map" as const,
+    }))
+    const toolDef = createCallOmoAgent(
+      createMockCtx(DEFAULT_AGENTS),
+      { launch, getTask: mock(() => undefined) },
+      [],
+      { explore: { model: "aws/anthropic/claude-sonnet-4" } },
+      undefined,
+      undefined,
+      {
+        clear: async () => {},
+        deleteSession: () => {},
+        list: () => [],
+        resolve,
+        show: async () => undefined,
+        use: async () => {},
+      },
+    )
+
+    await toolDef.execute(
+      {
+        description: "Mapped task",
+        prompt: "Use mapped model",
+        subagent_type: "explore",
+        run_in_background: true,
+      },
+      { sessionID: "parent-session", messageID: "msg", agent: "test", abort: new AbortController().signal },
+    )
+
+    expect(resolve).toHaveBeenCalledWith(expect.objectContaining({
+      key: "explore",
+      kind: "agent",
+      sessionID: "parent-session",
+    }))
+    expect(launch).toHaveBeenCalledWith(expect.objectContaining({
+      model: { providerID: "openai", modelID: "gpt-5.6-sol" },
+    }))
+  })
+
   test("forwards model variant from agent config to background executor (#2852)", async () => {
     //#given
     const launch = mock((_input: { model?: { providerID: string; modelID: string; variant?: string } }) => Promise.resolve({

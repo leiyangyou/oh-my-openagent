@@ -16,6 +16,7 @@ function createMinimalEventHandler() {
       clear: () => {},
     },
     managers: {
+      modelMapController: { deleteSession: () => {} },
       tmuxSessionManager: {
         onSessionCreated: async () => {},
         onSessionDeleted: async () => {},

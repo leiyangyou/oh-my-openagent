@@ -19,6 +19,7 @@ import { createOrGetSession } from "./session-creator"
 import { processMessages } from "./message-processor"
 import { waitForCompletion } from "./completion-poller"
 import { getFirstFallbackModel } from "../../agents/builtin-agents/model-resolution"
+import type { ModelMapController } from "../../features/model-map"
 
 function createSyncExecutorDeps(modelFallbackControllerAccessor?: ModelFallbackControllerAccessor) {
   return {
@@ -114,6 +115,7 @@ export function createCallOmoAgent(
   agentOverrides?: AgentOverrides,
   userCategories?: CategoriesConfig,
   modelFallbackControllerAccessor?: ModelFallbackControllerAccessor,
+  modelMapController?: ModelMapController,
 ): ToolDefinition {
   const agentDescriptions = ALLOWED_AGENTS.map(
     (name) => `- ${name}: Specialized agent for ${name} tasks`,
@@ -177,11 +179,22 @@ export function createCallOmoAgent(
         return `Error: Agent "${normalizedAgent}" is disabled via disabled_agents configuration. Remove it from disabled_agents in your .omo/omo.jsonc to use it.`
       }
 
-      const { model: resolvedModel, fallbackChain } = resolveModelAndFallbackChain({
+      const { model: baseModel, fallbackChain: baseFallbackChain } = resolveModelAndFallbackChain({
         subagentType: args.subagent_type,
         agentOverrides,
         userCategories,
       })
+      const mappedRoute = await modelMapController?.resolve({
+        baseModel,
+        fallbackChain: baseFallbackChain,
+        key: args.subagent_type,
+        kind: "agent",
+        sessionID: toolCtx.sessionID,
+      })
+      const resolvedModel = mappedRoute?.model ?? baseModel
+      const fallbackChain = mappedRoute?.fallbackChain === undefined
+        ? baseFallbackChain
+        : [...mappedRoute.fallbackChain]
 
       if (args.run_in_background) {
         if (args.session_id) {
@@ -221,4 +234,3 @@ export function createCallOmoAgent(
     },
   });
 }
-
