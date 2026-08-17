@@ -3,7 +3,7 @@ bun test v1.3.12 (700fc117)
 script/codex-installer-version.test.ts:
 13 |   const codexPackage = JSON.parse(readFileSync(codexPackagePath, "utf8")) as { version: string }
 14 |   const installer = readFileSync(installerPath, "utf8")
-15 | 
+15 |
 16 |   // then
 17 |   expect(codexPackage.version).toBe(rootPackage.version)
 18 |   expect(installer).toContain(`version: "${rootPackage.version}"`)

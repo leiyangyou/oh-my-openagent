@@ -4,7 +4,7 @@ script/package-layout.test.ts:
 214 |     // when
 215 |     const packedPaths = await packDryRunPaths()
 216 |     const missingRuntimePaths = expectedRuntimePaths.filter((expectedPath) => !packedPaths.has(expectedPath))
-217 | 
+217 |
 218 |     // then
 219 |     expect(missingRuntimePaths).toEqual([])
                                       ^

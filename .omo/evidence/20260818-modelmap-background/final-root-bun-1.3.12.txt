@@ -358,7 +358,7 @@ error: subscriber exploded
       at drain (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:226:13)
 
 
-  ⚙ read_file filePath=/src/index.ts  
+  ⚙ read_file filePath=/src/index.ts
 
 packages/omo-opencode/src/__tests__/perf/plugin-init.test.ts:
 empty-project: cold=89.5ms warm=[86.6, 82.0] median=86.6ms
