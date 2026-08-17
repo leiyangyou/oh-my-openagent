@@ -49,6 +49,11 @@ $ARGUMENTS
 </user-task>`,
       argumentHint: "<objective> | pause | resume | clear",
     },
+    modelmap: {
+      description: "(builtin) List, show, activate, or clear a named model map",
+      template: "$ARGUMENTS",
+      argumentHint: "list | show | use <name> [--global|--session] | clear [--global|--session]",
+    },
     refactor: {
       description:
         "(builtin) Intelligent refactoring command with LSP, AST-grep, architecture analysis, codemap, and TDD verification.",
