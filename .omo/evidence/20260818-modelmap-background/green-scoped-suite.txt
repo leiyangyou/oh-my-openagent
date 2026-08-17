@@ -2,7 +2,7 @@ bun test v1.3.7 (ba426210)
 
 packages/omo-opencode/src/features/background-agent/manager.test.ts:
 3514 |       const task = await manager.launch(input)
-3515 | 
+3515 |
 3516 |       // then
 3517 |       expect(task.attempts).toHaveLength(1)
 3518 |       expect(task.currentAttemptID).toBe(task.attempts?.[0]?.attemptId)

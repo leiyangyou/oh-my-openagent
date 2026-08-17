@@ -19,7 +19,7 @@ Received: "bun test v1.3.7 (ba426210)\n\n 23 pass\n 0 fail\n 42 expect() calls\n
 script/codex-installer-version.test.ts:
 13 |   const codexPackage = JSON.parse(readFileSync(codexPackagePath, "utf8")) as { version: string }
 14 |   const installer = readFileSync(installerPath, "utf8")
-15 | 
+15 |
 16 |   // then
 17 |   expect(codexPackage.version).toBe(rootPackage.version)
 18 |   expect(installer).toContain(`version: "${rootPackage.version}"`)
@@ -43,7 +43,7 @@ script/sync-lazycodex-marketplace.test.ts:
 packages/lsp-tools-mcp/test/package-smoke.test.ts:
 12 | 	readonly dependencies?: Record<string, unknown>;
 13 | };
-14 | 
+14 |
 15 | function readPackageJson(path: string): PackageJson {
 16 | 	const parsed: unknown = JSON.parse(readFileSync(path, "utf8"));
 17 | 	if (!isPackageJson(parsed)) throw new TypeError(`Invalid package metadata: ${path}`);
@@ -54,10 +54,10 @@ TypeError: Invalid package metadata: package.json
 (fail) package metadata > #given packaged files #when validating entrypoints #then package metadata is consistent [1.19ms]
 
 packages/lsp-tools-mcp/test/config-loader.test.ts:
-35 | 
+35 |
 36 | 		try {
 37 | 			const paths = runWithRequestContext(createStandaloneMcpRequestContext(), () => getConfigPaths());
-38 | 
+38 |
 39 | 			expect(paths.project).toBe(join(process.cwd(), "config", "lsp-opencode.json"));
 40 | 			expect(paths.user).toBe(join(process.env["HOME"] ?? "", ".opencode", "lsp.json"));
                            ^
@@ -123,7 +123,7 @@ packages/lsp-daemon/test/proxy-protocol-pin.test.ts:
 38 | 			paths: inertPaths(),
 39 | 			ensure: noSpawn,
 40 | 		});
-41 | 
+41 |
 42 | 		expect(parseSingleResponse(out)).toEqual({
                                         ^
 error: expect(received).toEqual(expected)
@@ -147,7 +147,7 @@ packages/lsp-daemon/test/request-routing.test.ts:
 15 | 		result: { content: [{ type: "text", text: "core dispatched" }] },
 16 | 	})),
 17 | }));
-18 | 
+18 |
 19 | const tempDirectories: string[] = [];
 20 | const dispatchMock = vi.mocked(handleLspMcpRequest);
                              ^
@@ -161,7 +161,7 @@ packages/lsp-daemon/test/proxy.test.ts:
 63 | 			paths,
 64 | 			ensure: noSpawn,
 65 | 		});
-66 | 
+66 |
 67 | 		const responses = parseResponses(out);
 68 | 		expect((responses[0]?.["result"] as { serverInfo?: unknown }).serverInfo).toBeDefined();
                                                                                  ^
@@ -188,7 +188,7 @@ Received: "LSP daemon unreachable: invalid daemon response.\nThe MCP server is a
 179 | 				paths,
 180 | 				ensure: noSpawn,
 181 | 			});
-182 | 
+182 |
 183 | 			input.write(`${JSON.stringify({ jsonrpc: "2.0", id: 6, method: "initialize", params: {} })}\n`);
 184 | 			await vi.advanceTimersByTimeAsync(10 * 60 * 1000 + 1);
                   ^
@@ -213,7 +213,7 @@ error: Premature close
 69 | 			ensure: noSpawn,
 70 | 			startupTimeoutMs: 20,
 71 | 		});
-72 | 
+72 |
 73 | 		try {
 74 | 			await vi.advanceTimersByTimeAsync(20);
                  ^
@@ -238,7 +238,7 @@ packages/omo-codex/scripts/install-local-bun-global-update.test.mjs:
 27 | 				LAZYCODEX_LATEST_VERSION: "1.0.1",
 28 | 			},
 29 | 		}).trim();
-30 | 
+30 |
 31 | 		// then
 32 | 		assert.equal(output, "bun update -g lazycodex-ai@latest\nnpx --yes lazycodex-ai@latest install --no-tui --codex-autonomous");
               ^
@@ -265,7 +265,7 @@ packages/omo-codex/scripts/install-local-entrypoint.test.mjs:
 221 | 				LAZYCODEX_LATEST_VERSION: "1.0.1",
 222 | 			},
 223 | 		}).trim();
-224 | 
+224 |
 225 | 		// then
 226 | 		assert.equal(output, "bun update -g lazycodex-ai@latest\nnpx --yes lazycodex-ai@latest install --no-tui --codex-autonomous");
                ^
@@ -288,7 +288,7 @@ AssertionError: Expected values to be strictly equal:
 253 | 			},
 254 | 		});
 255 | 		const commandLog = readFileSync(commandLogPath, "utf8");
-256 | 
+256 |
 257 | 		// then
 258 | 		assert.match(commandLog, /^bun update -g lazycodex-ai@latest$/m);
                ^

@@ -1,10 +1,10 @@
 bun test v1.3.7 (ba426210)
 
 packages/omo-opencode/src/features/background-agent/background-admission.test.ts:
-32 | 
+32 |
 33 |     await harness.manager.cancelTask(blocker.id, { abortSession: false, skipNotification: true })
 34 |     await waitFor(() => harness.prompts.length === 2, "the queued task to start")
-35 | 
+35 |
 36 |     const admitted = harness.manager.getTask(queued.id)
 37 |     expect(harness.prompts[1]?.model).toEqual({ providerID: "mapped", modelID: "revision-two" })
                                            ^
@@ -26,7 +26,7 @@ error: expect(received).toEqual(expected)
 55 |       routeIntent: intent({ model: { providerID: "base", modelID: "second" } }),
 56 |     }))
 57 |     await waitFor(() => harness.prompts.length === 2, "the independent task to start")
-58 | 
+58 |
 59 |     expect(attemptRoutes(harness.manager.getTask(first.id) ?? first)[0]).toMatchObject({ revision: 1 })
                                                                               ^
 error: expect(received).toMatchObject(expected)
@@ -38,7 +38,7 @@ Matcher error: received value must be a non-null object
 77 |       routeIntent: intent({ model: explicit, explicitModel: explicit }),
 78 |     }))
 79 |     await waitFor(() => harness.prompts.length === 1, "the explicit task to start")
-80 | 
+80 |
 81 |     expect(harness.prompts[0]?.model).toEqual(explicit)
 82 |     expect(attemptRoutes(harness.manager.getTask(task.id) ?? task)[0]).toMatchObject({ source: "explicit", scope: "explicit" })
                                                                             ^
@@ -50,7 +50,7 @@ Matcher error: received value must be a non-null object
 (fail) late-bound background admission > #given an explicit queued model #when a map route exists #then admission preserves the explicit route [8.65ms]
  98 |     }))
  99 |     await waitFor(() => harness.prompts.length === 1, "the transferred task to start")
-100 | 
+100 |
 101 |     const stored = harness.manager.getTask(task.id) ?? task
 102 |     expect(harness.prompts).toHaveLength(1)
 103 |     expect(harness.prompts[0]?.model?.modelID).toBe("revision-two")
@@ -68,7 +68,7 @@ packages/omo-opencode/src/features/background-agent/background-admission-races.t
 29 |       routeIntent: intent({ model: { providerID: "old-provider", modelID: "old-model" } }),
 30 |     }))
 31 |     await waitFor(() => harness.prompts.length === 1, "the transferred task to start")
-32 | 
+32 |
 33 |     expect(harness.concurrency.getCount("old-provider/old-model")).toBe(0)
                                                                         ^
 error: expect(received).toBe(expected)
@@ -78,7 +78,7 @@ Received: 1
 
       at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/features/background-agent/background-admission-races.test.ts:33:68)
 (fail) background admission ownership races > #given a late route with a different key #when transfer completes #then old capacity is released and new capacity is acquired once [7.22ms]
-124 | 
+124 |
 125 | export async function waitFor(predicate: () => boolean, description: string): Promise<void> {
 126 |   const deadline = Date.now() + 1_000
 127 |   while (!predicate()) {
@@ -89,10 +89,10 @@ error: Timed out waiting for the transferred waiter
       at waitFor (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/features/background-agent/background-admission.test-support.ts:129:17)
       at async <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/features/background-agent/background-admission-races.test.ts:52:11)
 (fail) background admission ownership races > #given cancellation while a transferred task waits #when both reservations clear #then no capacity leaks or duplicate start occur [1011.83ms]
-88 | 
+88 |
 89 |     await Reflect.apply(retryMethod, harness.manager, [stored, { name: "OverloadedError", message: "overloaded" }, "test"])
 90 |     await waitFor(() => harness.prompts.length === 2, "the fallback attempt to start")
-91 | 
+91 |
 92 |     expect(harness.prompts.map((request) => request.model?.modelID)).toEqual(["primary", "original-fallback"])
 93 |     expect(attemptRoutes(stored)).toEqual([
                                        ^
@@ -118,7 +118,7 @@ error: expect(received).toEqual(expected)
 120 |     await waitFor(() => harness.prompts.length === 2, "the first mapped FIFO task")
 121 |     await harness.manager.cancelTask(first.id, { abortSession: false, skipNotification: true })
 122 |     await waitFor(() => harness.prompts.length === 3, "the second mapped FIFO task")
-123 | 
+123 |
 124 |     expect(harness.prompts.slice(1).map((request) => request.model?.modelID)).toEqual(["mapped-1", "mapped-2"])
                                                                                     ^
 error: expect(received).toEqual(expected)
