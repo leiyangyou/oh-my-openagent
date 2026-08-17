@@ -32,8 +32,20 @@ function parseScope(flags: readonly string[]): ModelMapScope {
   return scopes[0] ?? "workspace"
 }
 
+function normalizeCommandArguments(argumentsText: string): string {
+  const trimmed = argumentsText.trim()
+  if (!trimmed.startsWith('"') || !trimmed.endsWith('"')) return trimmed
+  try {
+    const parsed: unknown = JSON.parse(trimmed)
+    return typeof parsed === "string" ? parsed : trimmed
+  } catch (error) {
+    if (error instanceof SyntaxError) return trimmed
+    throw error
+  }
+}
+
 export function parseModelMapCommand(argumentsText: string): ModelMapCommand {
-  const [command, ...argumentsList] = argumentsText.trim().split(/\s+/).filter(Boolean)
+  const [command, ...argumentsList] = normalizeCommandArguments(argumentsText).split(/\s+/).filter(Boolean)
   switch (command) {
     case "list":
       if (argumentsList.length === 0) return { kind: "list" }
