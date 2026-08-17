@@ -18,6 +18,7 @@ import { createDelegateTaskPresentation } from "./tool-description"
 import type { AvailableSkill } from "../../agents/dynamic-agent-prompt-builder"
 import { mergeNativeSkillInfos, type NativeSkillEntry } from "../skill/native-skills"
 import type { SkillInfo } from "../skill/types"
+import { getAgentConfigKey } from "../../shared/agent-display-names"
 
 async function loadNativeSkillEntries(
   nativeSkills: DelegateTaskToolOptions["nativeSkills"] | undefined,
@@ -217,7 +218,7 @@ export function createDelegateTask(options: DelegateTaskToolOptions): ToolDefini
         const mappedRoute = await options.modelMapController?.resolve({
           baseModel: categoryModel,
           fallbackChain,
-          key: agentToUse,
+          key: getAgentConfigKey(agentToUse),
           kind: "agent",
           sessionID: ctx.sessionID,
         })
