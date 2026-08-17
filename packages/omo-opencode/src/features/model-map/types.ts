@@ -32,6 +32,14 @@ export type ResolvedModelMapRoute = {
   readonly source: "base" | "explicit" | "model-map"
 }
 
+export type ModelMapLaunchIntent = ModelMapRouteRequest
+
+export type CapturedModelMapRoute = Readonly<ResolvedModelMapRoute>
+
+export type BackgroundRouteResolver = (
+  intent: ModelMapLaunchIntent,
+) => Promise<CapturedModelMapRoute | undefined>
+
 export interface ModelMapController {
   clear(input: { readonly scope: ModelMapScope; readonly sessionID?: string }): Promise<void>
   deleteSession(sessionID: string): void

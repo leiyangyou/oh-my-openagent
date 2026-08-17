@@ -6,7 +6,11 @@ import type { SubagentSessionCreatedEvent } from "./features/background-agent"
 import { BackgroundManager } from "./features/background-agent"
 import type { MonitorManager } from "./features/monitor"
 import { createMonitorManager } from "./features/monitor"
-import { createModelMapController, type ModelMapController } from "./features/model-map"
+import {
+  createBackgroundRouteResolver,
+  createModelMapController,
+  type ModelMapController,
+} from "./features/model-map"
 import { SkillMcpManager } from "./features/skill-mcp-manager"
 import { cleanupSessionTeamRuns } from "./features/team-mode/team-runtime/session-cleanup"
 import { lookupTeamSession } from "./features/team-mode/team-session-registry"
@@ -202,6 +206,7 @@ export function createManagers(args: {
     },
     enableParentSessionNotifications: backgroundNotificationHookEnabled,
     modelFallbackControllerAccessor,
+    resolveBackgroundRoute: createBackgroundRouteResolver(modelMapController),
   })
 
   if (pluginConfig.tui?.sidebar?.enabled !== false) {

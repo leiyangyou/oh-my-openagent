@@ -344,8 +344,11 @@ describe("createCallOmoAgent", () => {
     })
   })
 
-  test("#given an active model map #when direct-agent work dispatches #then the agent route replaces the base model", async () => {
-    const launch = mock((_input: { model?: { providerID: string; modelID: string } }) => Promise.resolve({
+  test("#given an active model map #when direct-agent background work queues #then unresolved intent accompanies the base model", async () => {
+    const launch = mock((_input: {
+      model?: { providerID: string; modelID: string }
+      routeIntent?: { baseModel?: { providerID: string; modelID: string }; key: string; kind: string; sessionID: string }
+    }) => Promise.resolve({
       id: "task-model-map",
       sessionId: "sub-session",
       description: "Mapped task",
@@ -388,13 +391,15 @@ describe("createCallOmoAgent", () => {
       { sessionID: "parent-session", messageID: "msg", agent: "test", abort: new AbortController().signal },
     )
 
-    expect(resolve).toHaveBeenCalledWith(expect.objectContaining({
-      key: "explore",
-      kind: "agent",
-      sessionID: "parent-session",
-    }))
+    expect(resolve).not.toHaveBeenCalled()
     expect(launch).toHaveBeenCalledWith(expect.objectContaining({
-      model: { providerID: "openai", modelID: "gpt-5.6-sol" },
+      model: { providerID: "aws", modelID: "anthropic/claude-sonnet-4" },
+      routeIntent: expect.objectContaining({
+        baseModel: { providerID: "aws", modelID: "anthropic/claude-sonnet-4" },
+        key: "explore",
+        kind: "agent",
+        sessionID: "parent-session",
+      }),
     }))
   })
 

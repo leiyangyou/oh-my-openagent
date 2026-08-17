@@ -55,6 +55,12 @@ type CapturedLaunchInput = {
   readonly agent?: string
   readonly model?: CapturedModel
   readonly fallbackChain?: unknown
+  readonly routeIntent?: {
+    readonly baseModel?: CapturedModel
+    readonly key: string
+    readonly kind: "agent" | "category"
+    readonly sessionID: string
+  }
 }
 
 type CapturedPromptBody = {
@@ -2485,7 +2491,7 @@ describe("sisyphus-task", () => {
        })
      }, { timeout: 20000 })
 
-     test("#given a display-name direct agent and canonical model map #when work dispatches #then the canonical route replaces the base model", async () => {
+     test("#given a display-name direct agent and canonical model map #when background work queues #then unresolved canonical intent accompanies the base model", async () => {
        const { createDelegateTask } = require("./tools")
        let launchInput: CapturedLaunchInput | undefined
        const resolve = mock(async (input: { readonly key: string }) => input.key === "hephaestus"
@@ -2546,12 +2552,14 @@ describe("sisyphus-task", () => {
          abort: new AbortController().signal,
        })
 
-       expect(resolve).toHaveBeenCalledWith(expect.objectContaining({
-         key: "hephaestus",
-         kind: "agent",
-         sessionID: "parent",
-       }))
-       expect(launchInput?.model).toEqual({ providerID: "mapped", modelID: "direct-model" })
+       expect(resolve).not.toHaveBeenCalled()
+       expect(launchInput?.routeIntent).toEqual(expect.objectContaining({
+          key: "hephaestus",
+          kind: "agent",
+          sessionID: "parent",
+        }))
+       expect(launchInput?.routeIntent?.baseModel).toEqual({ providerID: "openai", modelID: "gpt-5.5" })
+       expect(launchInput?.model).toEqual({ providerID: "openai", modelID: "gpt-5.5" })
      })
   })
 

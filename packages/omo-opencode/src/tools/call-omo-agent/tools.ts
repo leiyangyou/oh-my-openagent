@@ -19,7 +19,7 @@ import { createOrGetSession } from "./session-creator"
 import { processMessages } from "./message-processor"
 import { waitForCompletion } from "./completion-poller"
 import { getFirstFallbackModel } from "../../agents/builtin-agents/model-resolution"
-import type { ModelMapController } from "../../features/model-map"
+import { createModelMapLaunchIntent, type ModelMapController } from "../../features/model-map"
 
 function createSyncExecutorDeps(modelFallbackControllerAccessor?: ModelFallbackControllerAccessor) {
   return {
@@ -184,24 +184,26 @@ export function createCallOmoAgent(
         agentOverrides,
         userCategories,
       })
-      const mappedRoute = await modelMapController?.resolve({
+      const routeIntent = createModelMapLaunchIntent({
         baseModel,
         fallbackChain: baseFallbackChain,
         key: args.subagent_type,
         kind: "agent",
         sessionID: toolCtx.sessionID,
       })
-      const resolvedModel = mappedRoute?.model ?? baseModel
-      const fallbackChain = mappedRoute?.fallbackChain === undefined
-        ? baseFallbackChain
-        : [...mappedRoute.fallbackChain]
 
       if (args.run_in_background) {
         if (args.session_id) {
           return `Error: session_id is not supported in background mode. Use run_in_background=false to continue an existing session.`;
         }
-        return await executeBackground(args, toolCtx, backgroundManager, ctx.client, fallbackChain, resolvedModel)
+        return await executeBackground(args, toolCtx, backgroundManager, ctx.client, baseFallbackChain, baseModel, routeIntent)
       }
+
+      const mappedRoute = await modelMapController?.resolve(routeIntent)
+      const resolvedModel = mappedRoute?.model ?? baseModel
+      const fallbackChain = mappedRoute?.fallbackChain === undefined
+        ? baseFallbackChain
+        : [...mappedRoute.fallbackChain]
 
       if (!args.session_id) {
         let spawnReservation: Awaited<ReturnType<BackgroundManager["reserveSubagentSpawn"]>> | undefined

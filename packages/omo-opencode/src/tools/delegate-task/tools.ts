@@ -19,6 +19,7 @@ import type { AvailableSkill } from "../../agents/dynamic-agent-prompt-builder"
 import { mergeNativeSkillInfos, type NativeSkillEntry } from "../skill/native-skills"
 import type { SkillInfo } from "../skill/types"
 import { getAgentConfigKey } from "../../shared/agent-display-names"
+import { createModelMapLaunchIntent, type ModelMapLaunchIntent } from "../../features/model-map"
 
 async function loadNativeSkillEntries(
   nativeSkills: DelegateTaskToolOptions["nativeSkills"] | undefined,
@@ -153,6 +154,7 @@ export function createDelegateTask(options: DelegateTaskToolOptions): ToolDefini
       let isUnstableAgent = false
       let fallbackChain: import("../../shared/model-requirements").FallbackEntry[] | undefined
       let maxPromptTokens: number | undefined
+      let routeIntent: ModelMapLaunchIntent | undefined
 
       if (delegateTaskArgs.category) {
         const resolution = await resolveCategoryExecution(delegateTaskArgs, options, inheritedModel, systemDefaultModel)
@@ -168,17 +170,20 @@ export function createDelegateTask(options: DelegateTaskToolOptions): ToolDefini
         fallbackChain = resolution.fallbackChain
         maxPromptTokens = resolution.maxPromptTokens
 
-        const mappedRoute = await options.modelMapController?.resolve({
+        routeIntent = createModelMapLaunchIntent({
           baseModel: categoryModel,
           fallbackChain,
           key: delegateTaskArgs.category,
           kind: "category",
           sessionID: ctx.sessionID,
         })
-        if (mappedRoute !== undefined) {
-          categoryModel = mappedRoute.model
-          fallbackChain = mappedRoute.fallbackChain === undefined ? fallbackChain : [...mappedRoute.fallbackChain]
-          actualModel = mappedRoute.concurrencyKey
+        if (!runInBackground) {
+          const mappedRoute = await options.modelMapController?.resolve(routeIntent)
+          if (mappedRoute !== undefined) {
+            categoryModel = mappedRoute.model
+            fallbackChain = mappedRoute.fallbackChain === undefined ? fallbackChain : [...mappedRoute.fallbackChain]
+            actualModel = mappedRoute.concurrencyKey
+          }
         }
 
         const isRunInBackgroundExplicitlyFalse = isExplicitSyncRun(delegateTaskArgs.run_in_background)
@@ -215,16 +220,19 @@ export function createDelegateTask(options: DelegateTaskToolOptions): ToolDefini
         agentToUse = resolution.agentToUse
         categoryModel = resolution.categoryModel
         fallbackChain = resolution.fallbackChain
-        const mappedRoute = await options.modelMapController?.resolve({
+        routeIntent = createModelMapLaunchIntent({
           baseModel: categoryModel,
           fallbackChain,
           key: getAgentConfigKey(agentToUse),
           kind: "agent",
           sessionID: ctx.sessionID,
         })
-        if (mappedRoute !== undefined) {
-          categoryModel = mappedRoute.model
-          fallbackChain = mappedRoute.fallbackChain === undefined ? fallbackChain : [...mappedRoute.fallbackChain]
+        if (!runInBackground) {
+          const mappedRoute = await options.modelMapController?.resolve(routeIntent)
+          if (mappedRoute !== undefined) {
+            categoryModel = mappedRoute.model
+            fallbackChain = mappedRoute.fallbackChain === undefined ? fallbackChain : [...mappedRoute.fallbackChain]
+          }
         }
       }
 
@@ -241,7 +249,7 @@ export function createDelegateTask(options: DelegateTaskToolOptions): ToolDefini
       })
 
       if (runInBackground) {
-        return executeBackgroundTask(delegateTaskArgs, ctx, options, parentContext, agentToUse, categoryModel, systemContent, fallbackChain)
+        return executeBackgroundTask(delegateTaskArgs, ctx, options, parentContext, agentToUse, categoryModel, systemContent, fallbackChain, routeIntent)
       }
 
       return executeSyncTask(delegateTaskArgs, ctx, options, parentContext, agentToUse, categoryModel, systemContent, modelInfo, fallbackChain)
