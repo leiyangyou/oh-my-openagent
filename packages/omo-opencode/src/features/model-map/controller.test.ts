@@ -110,6 +110,16 @@ describe("createModelMapController", () => {
     expect(await controller.show("root")).toMatchObject({ name: "quality", revision: 0, scope: "workspace" })
   })
 
+  test("#given inherited object keys #when activation is attempted #then each key remains an unknown preset", async () => {
+    const { controller } = createFixture()
+
+    for (const name of ["toString", "constructor"]) {
+      await expect(controller.use({ name, scope: "session", sessionID: "root" })).rejects.toThrow(
+        `Unknown model preset "${name}"`,
+      )
+    }
+  })
+
   test("#given explicit mapped and base candidates #when resolving routes #then precedence and route kind stay distinct", async () => {
     const { controller } = createFixture()
     await controller.use({ name: "quality", scope: "session", sessionID: "root" })
