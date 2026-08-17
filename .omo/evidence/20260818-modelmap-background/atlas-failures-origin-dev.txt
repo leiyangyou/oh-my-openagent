@@ -1,0 +1,14 @@
+bun test v1.3.7 (ba426210)
+
+packages/omo-opencode/src/hooks/atlas/index.test.ts:
+[test-setup] vendored lsp-daemon dist missing; building once via `npm ci && npm run build`...
+npm warn install-scripts 1 package has install scripts not yet covered by allowScripts:
+npm warn install-scripts   fsevents@2.3.3 (install: (install scripts present))
+npm warn install-scripts
+npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+
+ 2 pass
+ 71 filtered out
+ 0 fail
+ 2 expect() calls
+Ran 2 tests across 1 file. [17.12s]

@@ -1,6 +1,31 @@
 bun test v1.3.7 (ba426210)
 
- 1333 pass
- 0 fail
- 3284 expect() calls
-Ran 1333 tests across 120 files. [28.48s]
+  ⚙ read_file filePath=/src/index.ts
+
+packages/omo-opencode/src/__tests__/perf/plugin-init.test.ts:
+empty-project: cold=121.6ms warm=[73.3, 62.8] median=73.3ms
+in-tree-fixture: cold=100.7ms warm=[67.1, 55.3] median=67.1ms
+
+packages/omo-opencode/src/hooks/atlas/index.test.ts:
+(fail) atlas hook > session.idle handler (boulder continuation) > should reset prompt failure counter after successful retry beyond backoff window [5002.95ms]
+  ^ this test timed out after 5000ms.
+2536 |
+2537 |         await hook.handler({ event: { type: "session.idle", properties: { sessionID: MAIN_SESSION_ID } } })
+2538 |         await flushMicrotasks()
+2539 |
+2540 |         //#then - 10 attempts + 1 after compaction (11 total)
+2541 |         expect(promptMock).toHaveBeenCalledTimes(11)
+                                  ^
+error: expect(received).toHaveBeenCalledTimes(expected)
+
+Expected number of calls: 11
+Received number of calls: 1
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/hooks/atlas/index.test.ts:2541:28)
+(fail) atlas hook > session.idle handler (boulder continuation) > should reset continuation failure state on session.compacted event [2278.77ms]
+
+ 8390 pass
+ 1 skip
+ 2 fail
+ 18890 expect() calls
+Ran 8393 tests across 993 files. [123.80s]
