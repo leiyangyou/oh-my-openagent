@@ -13,9 +13,9 @@
         "load_skills": [],
         "description": "first background admission qa",
         "run_in_background": true,
-        "taskId": "ses_fee17ed3bffeJtgjGMGZWSGklg",
-        "sessionId": "ses_fee17ed3bffeJtgjGMGZWSGklg",
-        "backgroundTaskId": "bg_dd608074",
+        "taskId": "ses_fedf3fdfcffeBOvtKnn8POz3j6",
+        "sessionId": "ses_fedf3fdfcffeBOvtKnn8POz3j6",
+        "backgroundTaskId": "bg_d1897d13",
         "model": {
           "providerID": "openai",
           "modelID": "mapped-old"
@@ -40,9 +40,9 @@
         "load_skills": [],
         "description": "second background admission qa",
         "run_in_background": true,
-        "taskId": "ses_fee17ea42ffeVPqzol15jSsv0K",
-        "sessionId": "ses_fee17ea42ffeVPqzol15jSsv0K",
-        "backgroundTaskId": "bg_c670fce4",
+        "taskId": "ses_fedf3fadaffeamYo41SiZCM0Z8",
+        "sessionId": "ses_fedf3fadaffeamYo41SiZCM0Z8",
+        "backgroundTaskId": "bg_4a002ed3",
         "model": {
           "providerID": "openai",
           "modelID": "mapped-new"
@@ -59,8 +59,8 @@
     }
   ],
   "isolation": {
-    "hostBefore": 826,
-    "hostAfter": 826,
+    "hostBefore": 835,
+    "hostAfter": 835,
     "hostCountsEqual": true,
     "isolatedSessions": 5,
     "codexBefore": "7f8ef42f971ec217a90a33a53f2f7e5eb6175232f05b74dd42ffea91768ed8a2",
