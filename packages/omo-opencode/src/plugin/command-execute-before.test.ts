@@ -21,6 +21,26 @@ function createMockGoal() {
 }
 
 describe("createCommandExecuteBeforeHandler", () => {
+  test("#given native /modelmap #when command.execute.before runs #then the controller result is emitted as structured synthetic output", async () => {
+    const execute = mock(async () => ({ action: "list" as const, names: ["quality"] }))
+    const handler = createCommandExecuteBeforeHandler(unsafeTestValue({
+      directory: process.cwd(),
+      hooks: {},
+      modelMapCommand: { execute },
+    }))
+    const output = { parts: [] }
+
+    await handler({ command: "modelmap", sessionID: "ses-map", arguments: "list" }, output)
+
+    expect(execute).toHaveBeenCalledWith("list", "ses-map")
+    expect(output.parts).toEqual([{
+      type: "text",
+      text: '{"action":"list","names":["quality"]}',
+      synthetic: true,
+      modelMap: true,
+    }])
+  })
+
   test("#given stopped session and /start-work #when command.execute.before runs #then clear is called", async () => {
     // given
     const clear = mock(() => {})

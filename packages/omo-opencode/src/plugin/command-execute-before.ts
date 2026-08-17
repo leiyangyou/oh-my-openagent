@@ -1,4 +1,5 @@
 import type { CreatedHooks } from "../create-hooks"
+import type { ModelMapCommandResult } from "../features/model-map"
 import { parseGoalCommand } from "../hooks/goal/command-arguments"
 import { log } from "../shared/logger"
 import { stopContinuation } from "./stop-continuation"
@@ -52,17 +53,29 @@ function hasPartsOutput(value: unknown): value is CommandExecuteBeforeOutput {
 export function createCommandExecuteBeforeHandler(args: {
   directory: string
   hooks: CreatedHooks
+  modelMapCommand?: {
+    readonly execute: (argumentsText: string, sessionID: string) => Promise<ModelMapCommandResult>
+  }
 }): (
   input: CommandExecuteBeforeInput,
   output: CommandExecuteBeforeOutput,
 ) => Promise<void> {
-  const { directory, hooks } = args
+  const { directory, hooks, modelMapCommand } = args
 
   return async (input, output): Promise<void> => {
     await hooks.autoSlashCommand?.["command.execute.before"]?.(input, output)
 
     const normalizedCommand = input.command.toLowerCase()
     const sessionID = input.sessionID
+    if (normalizedCommand === "modelmap" && modelMapCommand !== undefined) {
+      const result = await modelMapCommand.execute(input.arguments, sessionID)
+      output.parts.push({
+        type: "text",
+        text: JSON.stringify(result),
+        synthetic: true,
+        modelMap: true,
+      })
+    }
     if (normalizedCommand === "stop-continuation" && sessionID) {
       stopContinuation({ directory, hooks, sessionID })
     }

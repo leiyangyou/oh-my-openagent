@@ -16,6 +16,7 @@ import { createToolExecuteBeforeHandler } from "./plugin/tool-execute-before"
 
 import type { CreatedHooks } from "./create-hooks"
 import type { Managers } from "./create-managers"
+import { executeModelMapCommand } from "./features/model-map"
 
 export function createPluginInterface(args: {
   ctx: PluginContext
@@ -63,6 +64,9 @@ export function createPluginInterface(args: {
     "command.execute.before": createCommandExecuteBeforeHandler({
       directory: ctx.directory,
       hooks,
+      modelMapCommand: {
+        execute: (argumentsText, sessionID) => executeModelMapCommand(managers.modelMapController, argumentsText, sessionID),
+      },
     }),
 
     "chat.message": createChatMessageHandler({
