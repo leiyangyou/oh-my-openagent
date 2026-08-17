@@ -157,7 +157,7 @@ When an agent or category `model` string matches a catalog key, resolution (`mod
 
 ### `model_presets` and `model_preset`
 
-`model_presets` defines named maps with separate `agents` and `categories` records. Each route accepts the same model-reference shape used elsewhere: a provider-qualified string or `{ model, reasoning?, temperature?, top_p?, max_tokens?, provider_options? }`. Model catalog names are expanded before dispatch.
+`model_presets` defines named maps with separate `agents` and `categories` records. Each route accepts a provider-qualified string or `{ model, reasoning?, temperature?, top_p?, max_tokens? }`. Model catalog names are expanded before dispatch. Provider-specific options are rejected because the delegation model contract cannot carry them.
 
 ```jsonc
 {

@@ -49,6 +49,23 @@ describe("model_presets schema", () => {
     expect(result.success).toBeFalse()
   })
 
+  test("#given provider options on a modelmap route #when parsing root config #then rejects the unsupported setting", () => {
+    const result = OmoConfigSchema.safeParse({
+      model_presets: {
+        broken: {
+          agents: {
+            explore: {
+              model: "openai/gpt-5.6-sol",
+              provider_options: { service_tier: "priority" },
+            },
+          },
+        },
+      },
+    })
+
+    expect(result.success).toBeFalse()
+  })
+
   test("#given model presets inside a profile #when parsing root config #then rejects runtime maps as profiles", () => {
     const result = OmoConfigSchema.safeParse({
       profiles: {
