@@ -76,6 +76,24 @@ Activating a profile that does not exist produces a diagnostic and falls back to
 
 A top-level `models` record maps a short name to the canonical shape `{ model, reasoning? }`. Deprecated `variant` and `reasoningEffort` inputs are accepted for compatibility and normalized to `reasoning`. When an agent or category `model` string matches a catalog key, it resolves to the entry's model id and fills any unset `reasoning` from the entry; tuning written at the use site always wins. `[harness]` blocks can override individual catalog entries for one harness.
 
+#### Model Maps
+
+Define named `model_presets` with independent `agents` and `categories` routes, then activate one with `model_preset`. A user-layer selection is global; a project-layer selection is workspace-scoped. OpenCode session selections are in memory and inherited by descendant sessions.
+
+```jsonc
+{
+  "model_presets": {
+    "quality": {
+      "agents": { "explore": "openai/gpt-5.6-sol" },
+      "categories": { "deep": "anthropic/claude-opus-5" }
+    }
+  },
+  "model_preset": "quality"
+}
+```
+
+Precedence is explicit dispatch model, session map, workspace map, global map, base agent/category model, then existing fallback. New dispatches capture the resolved route; changing a map does not replace an in-flight turn.
+
 #### Security Invariants
 
 `mcp_env_allowlist` and `browser_automation_engine.playwright_mcp_args` are honored only from the user layer, including the user layer's own active profile block. Project layers cannot extend them.
@@ -734,7 +752,18 @@ Disable built-in commands via `disabled_commands`:
 { "disabled_commands": ["refactor", "start-work"] }
 ```
 
-Available commands: `goal`, `refactor`, `start-work`, `stop-continuation`, `remove-ai-slops`, `handoff`, `hyperplan`. The `disabled_commands` option currently accepts only the schema enum, which does not include `handoff`.
+Available commands: `goal`, `modelmap`, `refactor`, `start-work`, `stop-continuation`, `remove-ai-slops`, `handoff`, `hyperplan`.
+
+Model-map commands:
+
+```text
+/modelmap list
+/modelmap show
+/modelmap use <name> [--global|--session]
+/modelmap clear [--global|--session]
+```
+
+Without a scope flag, `use` and `clear` target the current workspace. `--global` writes the user config; `--session` changes only the current session and its descendants. Unknown preset names leave the current selection unchanged.
 
 ### Browser Automation
 
