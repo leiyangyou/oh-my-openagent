@@ -3,22 +3,13 @@ import type { DelegatedModelConfig } from "../../shared/model-resolution-types"
 import type {
   BackgroundRouteResolver,
   CapturedModelMapRoute,
+  LinearizedBackgroundRoute,
   ModelMapController,
   ModelMapLaunchIntent,
   ModelMapRouteRequest,
   ResolvedModelMapRoute,
 } from "./types"
-
-export class ModelMapAdmissionProgressError extends Error {
-  readonly name = "ModelMapAdmissionProgressError"
-
-  constructor(
-    readonly previousRevision: number,
-    readonly nextRevision: number,
-  ) {
-    super(`Modelmap admission route changed without a newer revision (${previousRevision} -> ${nextRevision})`)
-  }
-}
+import { BACKGROUND_ROUTE_LINEARIZATION_POINT } from "./types"
 
 function cloneModel(model: DelegatedModelConfig): DelegatedModelConfig {
   return {
@@ -58,6 +49,13 @@ export function captureModelMapRoute(route: ResolvedModelMapRoute): CapturedMode
   })
 }
 
+export function linearizeBackgroundRoute(route: CapturedModelMapRoute): LinearizedBackgroundRoute {
+  return Object.freeze({
+    ...route,
+    linearizationPoint: BACKGROUND_ROUTE_LINEARIZATION_POINT,
+  })
+}
+
 export function createBackgroundRouteResolver(controller: ModelMapController): BackgroundRouteResolver {
   return async (intent) => {
     const route = await controller.resolve(intent)
@@ -66,21 +64,12 @@ export function createBackgroundRouteResolver(controller: ModelMapController): B
 }
 
 export function captureFallbackAttemptRoute(
-  route: CapturedModelMapRoute,
+  route: LinearizedBackgroundRoute,
   model: DelegatedModelConfig,
-): CapturedModelMapRoute {
-  return captureModelMapRoute({
+): LinearizedBackgroundRoute {
+  return linearizeBackgroundRoute(captureModelMapRoute({
     ...route,
     concurrencyKey: `${model.providerID}/${model.modelID}`,
     model,
-  })
-}
-
-export function assertAdmissionRevisionProgress(
-  previous: CapturedModelMapRoute,
-  next: CapturedModelMapRoute,
-): void {
-  if (next.revision <= previous.revision) {
-    throw new ModelMapAdmissionProgressError(previous.revision, next.revision)
-  }
+  }))
 }

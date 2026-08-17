@@ -1,11 +1,10 @@
 import { describe, expect, test } from "bun:test"
 
 import {
-  assertAdmissionRevisionProgress,
   captureFallbackAttemptRoute,
   createBackgroundRouteResolver,
   createModelMapLaunchIntent,
-  ModelMapAdmissionProgressError,
+  linearizeBackgroundRoute,
 } from "./background-admission"
 import type { ModelMapController } from "./types"
 
@@ -70,7 +69,7 @@ describe("background modelmap admission", () => {
   })
 
   test("#given a captured route #when a fallback attempt is derived #then provenance and revision stay pinned while the model changes", () => {
-    const captured = captureFallbackAttemptRoute({
+    const captured = captureFallbackAttemptRoute(linearizeBackgroundRoute({
       concurrencyKey: "mapped/primary",
       fallbackChain: [{ model: "fallback", providers: ["provider-a"] }],
       mappedKey: "quick",
@@ -79,7 +78,7 @@ describe("background modelmap admission", () => {
       revision: 4,
       scope: "session",
       source: "model-map",
-    }, { providerID: "provider-a", modelID: "fallback" })
+    }), { providerID: "provider-a", modelID: "fallback" })
 
     expect(captured).toMatchObject({
       concurrencyKey: "provider-a/fallback",
@@ -88,24 +87,21 @@ describe("background modelmap admission", () => {
       revision: 4,
       scope: "session",
       source: "model-map",
+      linearizationPoint: "post-initial-capacity",
     })
   })
 
-  test("#given a transfer already observed #when another key arrives without a newer revision #then the progress invariant rejects spin", () => {
-    const previous = {
+  test("#given a captured route #when admission linearizes #then the immutable route records the admission point", () => {
+    const linearized = linearizeBackgroundRoute({
       concurrencyKey: "provider-a/first",
       mappedKey: "quick",
       model: { providerID: "provider-a", modelID: "first" },
       revision: 3,
       scope: "session" as const,
       source: "model-map" as const,
-    }
-    const next = {
-      ...previous,
-      concurrencyKey: "provider-b/second",
-      model: { providerID: "provider-b", modelID: "second" },
-    }
+    })
 
-    expect(() => assertAdmissionRevisionProgress(previous, next)).toThrow(ModelMapAdmissionProgressError)
+    expect(linearized.linearizationPoint).toBe("post-initial-capacity")
+    expect(Object.isFrozen(linearized)).toBe(true)
   })
 })

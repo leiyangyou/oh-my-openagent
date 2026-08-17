@@ -36,6 +36,12 @@ export type ModelMapLaunchIntent = ModelMapRouteRequest
 
 export type CapturedModelMapRoute = Readonly<ResolvedModelMapRoute>
 
+export const BACKGROUND_ROUTE_LINEARIZATION_POINT = "post-initial-capacity" as const
+
+export type LinearizedBackgroundRoute = CapturedModelMapRoute & {
+  readonly linearizationPoint: typeof BACKGROUND_ROUTE_LINEARIZATION_POINT
+}
+
 export type BackgroundRouteResolver = (
   intent: ModelMapLaunchIntent,
 ) => Promise<CapturedModelMapRoute | undefined>
