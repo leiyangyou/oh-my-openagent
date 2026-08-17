@@ -1,0 +1,37 @@
+[
+  {
+    "call": 1,
+    "model": "parent-base",
+    "prompt": "other"
+  },
+  {
+    "call": 2,
+    "model": "mapped-old",
+    "prompt": "first"
+  },
+  {
+    "call": 3,
+    "model": "parent-base",
+    "prompt": "first"
+  },
+  {
+    "call": 4,
+    "model": "parent-base",
+    "prompt": "other"
+  },
+  {
+    "call": 5,
+    "model": "mapped-new",
+    "prompt": "second"
+  },
+  {
+    "call": 6,
+    "model": "parent-base",
+    "prompt": "first"
+  },
+  {
+    "call": 7,
+    "model": "fallback-old",
+    "prompt": "first"
+  }
+]

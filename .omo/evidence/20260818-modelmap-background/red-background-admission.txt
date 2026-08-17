@@ -1,0 +1,142 @@
+bun test v1.3.7 (ba426210)
+
+packages/omo-opencode/src/features/background-agent/background-admission.test.ts:
+32 | 
+33 |     await harness.manager.cancelTask(blocker.id, { abortSession: false, skipNotification: true })
+34 |     await waitFor(() => harness.prompts.length === 2, "the queued task to start")
+35 | 
+36 |     const admitted = harness.manager.getTask(queued.id)
+37 |     expect(harness.prompts[1]?.model).toEqual({ providerID: "mapped", modelID: "revision-two" })
+                                           ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "modelID": "revision-two",
+-   "providerID": "mapped",
++   "modelID": "queued",
++   "providerID": "base",
+  }
+
+- Expected  - 2
++ Received  + 2
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/features/background-agent/background-admission.test.ts:37:39)
+(fail) late-bound background admission > #given a task waiting on its base key #when the map revision changes #then its first attempt adopts the new route [31.30ms]
+54 |       model: { providerID: "base", modelID: "second" },
+55 |       routeIntent: intent({ model: { providerID: "base", modelID: "second" } }),
+56 |     }))
+57 |     await waitFor(() => harness.prompts.length === 2, "the independent task to start")
+58 | 
+59 |     expect(attemptRoutes(harness.manager.getTask(first.id) ?? first)[0]).toMatchObject({ revision: 1 })
+                                                                              ^
+error: expect(received).toMatchObject(expected)
+
+Matcher error: received value must be a non-null object
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/features/background-agent/background-admission.test.ts:59:74)
+(fail) late-bound background admission > #given an active mapped attempt #when the map changes #then it stays pinned and a later task uses the newer revision [14.81ms]
+77 |       routeIntent: intent({ model: explicit, explicitModel: explicit }),
+78 |     }))
+79 |     await waitFor(() => harness.prompts.length === 1, "the explicit task to start")
+80 | 
+81 |     expect(harness.prompts[0]?.model).toEqual(explicit)
+82 |     expect(attemptRoutes(harness.manager.getTask(task.id) ?? task)[0]).toMatchObject({ source: "explicit", scope: "explicit" })
+                                                                            ^
+error: expect(received).toMatchObject(expected)
+
+Matcher error: received value must be a non-null object
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/features/background-agent/background-admission.test.ts:82:72)
+(fail) late-bound background admission > #given an explicit queued model #when a map route exists #then admission preserves the explicit route [8.65ms]
+ 98 |     }))
+ 99 |     await waitFor(() => harness.prompts.length === 1, "the transferred task to start")
+100 | 
+101 |     const stored = harness.manager.getTask(task.id) ?? task
+102 |     expect(harness.prompts).toHaveLength(1)
+103 |     expect(harness.prompts[0]?.model?.modelID).toBe("revision-two")
+                                                     ^
+error: expect(received).toBe(expected)
+
+Expected: "revision-two"
+Received: "initial"
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/features/background-agent/background-admission.test.ts:103:48)
+(fail) late-bound background admission > #given repeated map changes during transfer #when admission settles #then exactly one attempt starts on the latest observed revision [13.63ms]
+
+packages/omo-opencode/src/features/background-agent/background-admission-races.test.ts:
+28 |       model: { providerID: "old-provider", modelID: "old-model" },
+29 |       routeIntent: intent({ model: { providerID: "old-provider", modelID: "old-model" } }),
+30 |     }))
+31 |     await waitFor(() => harness.prompts.length === 1, "the transferred task to start")
+32 | 
+33 |     expect(harness.concurrency.getCount("old-provider/old-model")).toBe(0)
+                                                                        ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 1
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/features/background-agent/background-admission-races.test.ts:33:68)
+(fail) background admission ownership races > #given a late route with a different key #when transfer completes #then old capacity is released and new capacity is acquired once [7.22ms]
+124 | 
+125 | export async function waitFor(predicate: () => boolean, description: string): Promise<void> {
+126 |   const deadline = Date.now() + 1_000
+127 |   while (!predicate()) {
+128 |     if (Date.now() >= deadline) {
+129 |       throw new Error(`Timed out waiting for ${description}`)
+                      ^
+error: Timed out waiting for the transferred waiter
+      at waitFor (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/features/background-agent/background-admission.test-support.ts:129:17)
+      at async <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/features/background-agent/background-admission-races.test.ts:52:11)
+(fail) background admission ownership races > #given cancellation while a transferred task waits #when both reservations clear #then no capacity leaks or duplicate start occur [1011.83ms]
+88 | 
+89 |     await Reflect.apply(retryMethod, harness.manager, [stored, { name: "OverloadedError", message: "overloaded" }, "test"])
+90 |     await waitFor(() => harness.prompts.length === 2, "the fallback attempt to start")
+91 | 
+92 |     expect(harness.prompts.map((request) => request.model?.modelID)).toEqual(["primary", "original-fallback"])
+93 |     expect(attemptRoutes(stored)).toEqual([
+                                       ^
+error: expect(received).toEqual(expected)
+
+  [
+-   ObjectContaining {
+-     "revision": 1,
+-   },
+-   ObjectContaining {
+-     "revision": 1,
+-   },
++   undefined,
++   undefined,
+  ]
+
+- Expected  - 6
++ Received  + 2
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/features/background-agent/background-admission-races.test.ts:93:35)
+(fail) background admission ownership races > #given an admitted fallback chain #when the map changes before retry #then retry uses the original captured chain [17.81ms]
+119 |     await harness.manager.cancelTask(blocker.id, { abortSession: false, skipNotification: true })
+120 |     await waitFor(() => harness.prompts.length === 2, "the first mapped FIFO task")
+121 |     await harness.manager.cancelTask(first.id, { abortSession: false, skipNotification: true })
+122 |     await waitFor(() => harness.prompts.length === 3, "the second mapped FIFO task")
+123 | 
+124 |     expect(harness.prompts.slice(1).map((request) => request.model?.modelID)).toEqual(["mapped-1", "mapped-2"])
+                                                                                    ^
+error: expect(received).toEqual(expected)
+
+  [
+-   "mapped-1",
+-   "mapped-2",
++   "base-first",
++   "base-second",
+  ]
+
+- Expected  - 2
++ Received  + 2
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/features/background-agent/background-admission-races.test.ts:124:79)
+(fail) background admission ownership races > #given provider-level concurrency and unchanged normalized keys #when mapped tasks wait #then admission preserves FIFO [21.56ms]
+
+ 0 pass
+ 8 fail
+ 10 expect() calls
+Ran 8 tests across 2 files. [1.79s]

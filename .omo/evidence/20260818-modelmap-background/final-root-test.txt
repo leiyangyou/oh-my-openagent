@@ -1,0 +1,323 @@
+bun test v1.3.7 (ba426210)
+
+script/package-layout-exclusion.test.ts:
+114 |     new Response(packProcess.stderr).text(),
+115 |     packProcess.exited,
+116 |   ])
+117 | 
+118 |   if (exitCode !== 0) {
+119 |     throw new PackDryRunError(exitCode, stderr)
+                ^
+PackDryRunError: bun pm pack --dry-run --ignore-scripts failed with exit code 1: ENOENT: failed to stat file: "packages/omo-codex/plugin/skills/frontend/references/designpowers/vendor/LICENSE"
+
+ exitCode: 1,
+   stderr: "ENOENT: failed to stat file: \"packages/omo-codex/plugin/skills/frontend/references/designpowers/vendor/LICENSE\"\n",
+
+      at runPackDryRun (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/script/package-layout-exclusion.test.ts:119:11)
+      at async <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/script/package-layout-exclusion.test.ts:216:31)
+(fail) published package layout exclusions > #given internal-only skill assets #when packing package #then forbidden skill assets do not ship [829.31ms]
+114 |     new Response(packProcess.stderr).text(),
+115 |     packProcess.exited,
+116 |   ])
+117 | 
+118 |   if (exitCode !== 0) {
+119 |     throw new PackDryRunError(exitCode, stderr)
+                ^
+PackDryRunError: bun pm pack --dry-run --ignore-scripts failed with exit code 1: ENOENT: failed to stat file: "packages/omo-codex/plugin/skills/frontend/references/designpowers/vendor/LICENSE"
+
+ exitCode: 1,
+   stderr: "ENOENT: failed to stat file: \"packages/omo-codex/plugin/skills/frontend/references/designpowers/vendor/LICENSE\"\n",
+
+      at runPackDryRun (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/script/package-layout-exclusion.test.ts:119:11)
+      at async <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/script/package-layout-exclusion.test.ts:216:31)
+(fail) published package layout exclusions > #given internal-only command assets #when packing package #then forbidden command assets do not ship [0.49ms]
+
+script/root-test-config.test.ts:
+53 |     const output = spawnBun([
+54 |       "--config=bunfig.root.toml",
+55 |       "test",
+56 |       "packages/omo-senpi/src/components/memory/status.test.ts",
+57 |     ])
+58 |     expect(output).toContain("filters did not match any test files")
+                        ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "filters did not match any test files"
+Received: "bun test v1.3.7 (ba426210)\n\n 23 pass\n 0 fail\n 42 expect() calls\nRan 23 tests across 1 file. [2.27s]\n"
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/script/root-test-config.test.ts:58:20)
+(fail) root test Bun config > #given bunfig.root.toml #when bun loads it via --config= #then Senpi tests are ignored [2284.60ms]
+
+script/sync-lazycodex-marketplace.test.ts:
+[sync-lazycodex-marketplace] previous-payload reconstruction: skipping missing LSP daemon dist at /var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/omo-sync-prev-source-7I8181/packages/lsp-daemon/dist
+[sync-lazycodex-marketplace] previous-payload reconstruction: skipping missing OMO root CLI dist at /var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/omo-sync-prev-source-7I8181/dist/cli
+[sync-lazycodex-marketplace] previous-payload reconstruction: skipping missing OMO node fallback CLI dist at /var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/omo-sync-prev-source-7I8181/dist/cli-node
+[materialize] wrote 148 frontend reference files from submodules
+[materialize] wrote 148 frontend reference files from submodules
+[materialize] wrote 148 frontend reference files from submodules
+
+packages/lsp-tools-mcp/test/package-smoke.test.ts:
+12 | 	readonly dependencies?: Record<string, unknown>;
+13 | };
+14 | 
+15 | function readPackageJson(path: string): PackageJson {
+16 | 	const parsed: unknown = JSON.parse(readFileSync(path, "utf8"));
+17 | 	if (!isPackageJson(parsed)) throw new TypeError(`Invalid package metadata: ${path}`);
+                                                                                         ^
+TypeError: Invalid package metadata: package.json
+      at readPackageJson (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/lsp-tools-mcp/test/package-smoke.test.ts:17:85)
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/lsp-tools-mcp/test/package-smoke.test.ts:24:23)
+(fail) package metadata > #given packaged files #when validating entrypoints #then package metadata is consistent [0.46ms]
+
+packages/lsp-tools-mcp/test/config-loader.test.ts:
+35 | 
+36 | 		try {
+37 | 			const paths = runWithRequestContext(createStandaloneMcpRequestContext(), () => getConfigPaths());
+38 | 
+39 | 			expect(paths.project).toBe(join(process.cwd(), "config", "lsp-opencode.json"));
+40 | 			expect(paths.user).toBe(join(process.env["HOME"] ?? "", ".opencode", "lsp.json"));
+                           ^
+error: expect(received).toBe(expected)
+
+Expected: "/var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/omo-test-home-QeU9x9/.opencode/lsp.json"
+Received: "/Users/leiyang/.opencode/lsp.json"
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/lsp-tools-mcp/test/config-loader.test.ts:40:23)
+(fail) config loader > supports project and user config path overrides via environment variables [1.31ms]
+
+packages/web/e2e/example.spec.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '@playwright/test' from '/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/web/e2e/example.spec.ts'
+-------------------------------
+
+
+packages/web/e2e/responsive.spec.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '@playwright/test' from '/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/web/e2e/responsive.spec.ts'
+-------------------------------
+
+
+packages/web/e2e/hero-stats.spec.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '@playwright/test' from '/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/web/e2e/hero-stats.spec.ts'
+-------------------------------
+
+
+packages/lsp-daemon/test/proxy-lifecycle.test.ts:
+54 |     closed = !0;
+55 |     let errored = isWritableErrored(stream) || isReadableErrored(stream);
+56 |     if (errored && typeof errored !== "boolean")
+57 |       return callback.@call(stream, errored);
+58 |     if (readable && !readableFinished && isReadableNodeStream(stream, !0)) {
+59 |         return callback.@call(stream, @makeErrorWithCode(230));
+                                                             ^
+error: Premature close
+ code: "ERR_STREAM_PREMATURE_CLOSE"
+
+      at onclose (internal:streams/end-of-stream:59:57)
+      at emit (node:events:92:22)
+      at emitCloseNT (internal:streams/destroy:78:14)
+147 | 			ensure: noSpawn,
+148 | 			parentWatchdog: { pollIntervalMs: 1_000, probeAlive: () => false },
+149 | 		});
+150 | 		try {
+151 | 			input.write(`${JSON.stringify({ jsonrpc: "2.0", id: 51, method: "initialize", params: {} })}\n`);
+152 | 			await vi.advanceTimersByTimeAsync(0);
+                  ^
+TypeError: vi.advanceTimersByTimeAsync is not a function. (In 'vi.advanceTimersByTimeAsync(0)', 'vi.advanceTimersByTimeAsync' is undefined)
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/lsp-daemon/test/proxy-lifecycle.test.ts:152:13)
+(fail) mcp stdio proxy lifecycle > #given an initialized proxy whose stdin stays open #when its parent process dies #then the parent watchdog exits the proxy without waiting for stdin close [2.59ms]
+
+packages/lsp-daemon/test/proxy-protocol-pin.test.ts:
+37 | 			output: collectingWritable(out),
+38 | 			paths: inertPaths(),
+39 | 			ensure: noSpawn,
+40 | 		});
+41 | 
+42 | 		expect(parseSingleResponse(out)).toEqual({
+                                        ^
+error: expect(received).toEqual(expected)
+
+@@ -3,3 +3,3 @@
+      "code": -32700,
+-     "data": "Unexpected token 'g', "garbage" is not valid JSON",
++     "data": "JSON Parse error: Unexpected identifier "garbage"",
+      "message": "Parse error",
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/lsp-daemon/test/proxy-protocol-pin.test.ts:42:36)
+(fail) lsp-daemon MCP proxy protocol pins > given malformed stdio line when proxied then parse error envelope includes parser data [1.01ms]
+
+packages/lsp-daemon/test/request-routing.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+15 | 		result: { content: [{ type: "text", text: "core dispatched" }] },
+16 | 	})),
+17 | }));
+18 | 
+19 | const tempDirectories: string[] = [];
+20 | const dispatchMock = vi.mocked(handleLspMcpRequest);
+                             ^
+TypeError: vi.mocked is not a function. (In 'vi.mocked(handleLspMcpRequest)', 'vi.mocked' is undefined)
+      at /Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/lsp-daemon/test/request-routing.test.ts:20:25
+      at loadAndEvaluateModule (2:1)
+-------------------------------
+
+
+packages/lsp-daemon/test/proxy.test.ts:
+63 | 			paths,
+64 | 			ensure: noSpawn,
+65 | 		});
+66 | 
+67 | 		const responses = parseResponses(out);
+68 | 		expect((responses[0]?.["result"] as { serverInfo?: unknown }).serverInfo).toBeDefined();
+                                                                                 ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/lsp-daemon/test/proxy.test.ts:68:77)
+(fail) mcp stdio proxy > #given initialize and tools/call #when proxied #then initialize is local and the tool goes to the daemon [6.53ms]
+118 | 				| undefined;
+119 | 			const decision = responses.find((response) => response["id"] === 4)?.["result"] as
+120 | 				| { readonly isError?: boolean }
+121 | 				| undefined;
+122 | 			const statusText = status?.content[0]?.text ?? "";
+123 | 			expect(statusText).toContain("- typescript: disabled");
+                            ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "- typescript: disabled"
+Received: "LSP daemon unreachable: invalid daemon response.\nThe MCP server is a thin proxy and never runs language servers in-process.\nSocket: /var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/lsp-daemon-proxy-0MpRvQ/vtest/daemon.sock\nLogs: /var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/lsp-daemon-proxy-0MpRvQ/vtest/daemon.log\nThe daemon is auto-started on demand and will be retried on the next request."
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/lsp-daemon/test/proxy.test.ts:123:23)
+(fail) mcp stdio proxy > #given OpenCode LSP env #when tools are proxied #then daemon requests use the env-derived typed context [13.78ms]
+179 | 				paths,
+180 | 				ensure: noSpawn,
+181 | 			});
+182 | 
+183 | 			input.write(`${JSON.stringify({ jsonrpc: "2.0", id: 6, method: "initialize", params: {} })}\n`);
+184 | 			await vi.advanceTimersByTimeAsync(10 * 60 * 1000 + 1);
+                  ^
+TypeError: vi.advanceTimersByTimeAsync is not a function. (In 'vi.advanceTimersByTimeAsync(600001)', 'vi.advanceTimersByTimeAsync' is undefined)
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/lsp-daemon/test/proxy.test.ts:184:13)
+(fail) mcp stdio proxy > #given an initialized idle proxy #when the next request arrives after ten minutes #then it still responds [1.24ms]
+
+packages/lsp-daemon/test/proxy-startup-watchdog.test.ts:
+54 |     closed = !0;
+55 |     let errored = isWritableErrored(stream) || isReadableErrored(stream);
+56 |     if (errored && typeof errored !== "boolean")
+57 |       return callback.@call(stream, errored);
+58 |     if (readable && !readableFinished && isReadableNodeStream(stream, !0)) {
+59 |         return callback.@call(stream, @makeErrorWithCode(230));
+                                                             ^
+error: Premature close
+ code: "ERR_STREAM_PREMATURE_CLOSE"
+
+      at onclose (internal:streams/end-of-stream:59:57)
+      at emit (node:events:92:22)
+      at emitCloseNT (internal:streams/destroy:78:14)
+69 | 			ensure: noSpawn,
+70 | 			startupTimeoutMs: 20,
+71 | 		});
+72 | 
+73 | 		try {
+74 | 			await vi.advanceTimersByTimeAsync(20);
+                 ^
+TypeError: vi.advanceTimersByTimeAsync is not a function. (In 'vi.advanceTimersByTimeAsync(20)', 'vi.advanceTimersByTimeAsync' is undefined)
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/lsp-daemon/test/proxy-startup-watchdog.test.ts:74:13)
+(fail) mcp stdio proxy startup watchdog > #given the diagnostic stream throws #when startup expires #then diagnostic failure cannot prevent proxy shutdown [3.00ms]
+
+packages/lsp-daemon/test/paths.test.ts:
+64 | 	for (const candidate of ["./package.json", "../package.json"]) {
+65 | 		let loaded: unknown;
+66 | 		try {
+67 | 			loaded = requireFn(candidate);
+68 | 		} catch (error) {
+69 | 			if (!(error instanceof Error)) throw error;
+                                             ^
+ResolveMessage: Cannot find module './package.json' from '/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/lsp-daemon/src/paths.ts'
+      at resolveDaemonVersion (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/lsp-daemon/src/paths.ts:69:41)
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/lsp-daemon/test/paths.test.ts:49:10)
+(fail) resolveDaemonVersion injection > #given the default require #when resolving version #then returns the real package version [0.27ms]
+
+packages/omo-codex/scripts/install-local-bun-global-update.test.mjs:
+27 | 				LAZYCODEX_LATEST_VERSION: "1.0.1",
+28 | 			},
+29 | 		}).trim();
+30 | 
+31 | 		// then
+32 | 		assert.equal(output, "bun update -g lazycodex-ai@latest\nnpx --yes lazycodex-ai@latest install --no-tui --codex-autonomous");
+              ^
+AssertionError: Expected values to be strictly equal:
++ actual - expected
+
++ 'npx --yes lazycodex-ai@latest install --no-tui --codex-autonomous'
+- 'bun update -g lazycodex-ai@latest\n' +
+-   'npx --yes lazycodex-ai@latest install --no-tui --codex-autonomous'
+
+ generatedMessage: true,
+     actual: "npx --yes lazycodex-ai@latest install --no-tui --codex-autonomous",
+   expected: "bun update -g lazycodex-ai@latest\nnpx --yes lazycodex-ai@latest install --no-tui --codex-autonomous",
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-codex/scripts/install-local-bun-global-update.test.mjs:32:10
+      at fn (node:test:210:18)
+(fail) #given direct bun global lazycodex bin #when running update dry-run #then prints bun global update command [58.68ms]
+lazycodex-ai installs the Codex Light edition only. Use the omo installer for OpenCode or both-platform installs.
+Refusing recursive lazycodex doctor invocation from inside $omo:lcx-doctor
+
+packages/omo-codex/scripts/install-local-entrypoint.test.mjs:
+221 | 				LAZYCODEX_LATEST_VERSION: "1.0.1",
+222 | 			},
+223 | 		}).trim();
+224 | 
+225 | 		// then
+226 | 		assert.equal(output, "bun update -g lazycodex-ai@latest\nnpx --yes lazycodex-ai@latest install --no-tui --codex-autonomous");
+               ^
+AssertionError: Expected values to be strictly equal:
++ actual - expected
+
++ 'npx --yes lazycodex-ai@latest install --no-tui --codex-autonomous'
+- 'bun update -g lazycodex-ai@latest\n' +
+-   'npx --yes lazycodex-ai@latest install --no-tui --codex-autonomous'
+
+ generatedMessage: true,
+     actual: "npx --yes lazycodex-ai@latest install --no-tui --codex-autonomous",
+   expected: "bun update -g lazycodex-ai@latest\nnpx --yes lazycodex-ai@latest install --no-tui --codex-autonomous",
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-codex/scripts/install-local-entrypoint.test.mjs:226:10
+      at fn (node:test:210:18)
+(fail) #given bun global lazycodex wrapper #when running update dry-run #then prints bun global update command [56.39ms]
+253 | 			},
+254 | 		});
+255 | 		const commandLog = readFileSync(commandLogPath, "utf8");
+256 | 
+257 | 		// then
+258 | 		assert.match(commandLog, /^bun update -g lazycodex-ai@latest$/m);
+               ^
+AssertionError: The input did not match the regular expression /^bun update -g lazycodex-ai@latest$/m. Input:
+
+'npx --yes lazycodex-ai@latest install --no-tui --codex-autonomous\n'
+
+ generatedMessage: true,
+     actual: "npx --yes lazycodex-ai@latest install --no-tui --codex-autonomous\n",
+   expected: /^bun update -g lazycodex-ai@latest$/m,
+   operator: "match",
+       code: "ERR_ASSERTION"
+
+      at /Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-codex/scripts/install-local-entrypoint.test.mjs:258:10
+      at fn (node:test:210:18)
+(fail) #given bun global lazycodex wrapper and untrusted known scripts #when update runs noninteractively #then prints manual scoped trust command [467.98ms]

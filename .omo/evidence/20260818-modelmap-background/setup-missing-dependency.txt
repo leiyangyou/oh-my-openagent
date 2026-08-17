@@ -1,0 +1,14 @@
+bun test v1.3.7 (ba426210)
+
+packages/omo-opencode/src/features/background-agent/background-admission-characterization.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '@oh-my-opencode/utils' from '/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/shared/data-path.ts'
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [315.00ms]

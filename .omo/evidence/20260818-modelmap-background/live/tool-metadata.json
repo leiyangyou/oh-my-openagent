@@ -1,0 +1,56 @@
+[
+  {
+    "tool": "task",
+    "metadata": {
+      "truncated": false,
+      "prompt": "BGQA_FIRST_CHILD",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "load_skills": [],
+      "description": "first background admission qa",
+      "run_in_background": true,
+      "taskId": "ses_fee17ed3bffeJtgjGMGZWSGklg",
+      "sessionId": "ses_fee17ed3bffeJtgjGMGZWSGklg",
+      "backgroundTaskId": "bg_dd608074",
+      "model": {
+        "providerID": "openai",
+        "modelID": "mapped-old"
+      },
+      "modelMap": {
+        "concurrencyKey": "openai/mapped-old",
+        "mappedKey": "quick",
+        "presetName": "old",
+        "revision": 0,
+        "scope": "workspace",
+        "source": "model-map"
+      }
+    }
+  },
+  {
+    "tool": "task",
+    "metadata": {
+      "truncated": false,
+      "prompt": "BGQA_SECOND_CHILD",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "load_skills": [],
+      "description": "second background admission qa",
+      "run_in_background": true,
+      "taskId": "ses_fee17ea42ffeVPqzol15jSsv0K",
+      "sessionId": "ses_fee17ea42ffeVPqzol15jSsv0K",
+      "backgroundTaskId": "bg_c670fce4",
+      "model": {
+        "providerID": "openai",
+        "modelID": "mapped-new"
+      },
+      "modelMap": {
+        "concurrencyKey": "openai/mapped-new",
+        "mappedKey": "quick",
+        "presetName": "new",
+        "revision": 1,
+        "scope": "workspace",
+        "source": "model-map"
+      }
+    }
+  }
+]
