@@ -1,5 +1,5 @@
 import type { DelegatedModelConfig } from "../../shared/model-resolution-types"
-import type { CapturedModelMapRoute } from "../model-map"
+import type { LinearizedBackgroundRoute } from "../model-map"
 import type { BackgroundTask, BackgroundTaskAttempt, BackgroundTaskStatus } from "./types"
 
 type TerminalAttemptStatus = Extract<BackgroundTaskStatus, "completed" | "error" | "cancelled" | "interrupt">
@@ -91,7 +91,7 @@ export function projectTaskFromCurrentAttempt(task: BackgroundTask): BackgroundT
 export function startAttempt(
   task: BackgroundTask,
   model: DelegatedModelConfig | undefined,
-  route?: CapturedModelMapRoute,
+  route?: LinearizedBackgroundRoute,
 ): BackgroundTaskAttempt {
   const attempt: BackgroundTaskAttempt = {
     attemptId: `att_${crypto.randomUUID().slice(0, 8)}`,
@@ -129,7 +129,7 @@ export function setAttemptConcurrencyKey(
 export function pinAttemptRoute(
   task: BackgroundTask,
   attemptID: string,
-  route: CapturedModelMapRoute,
+  route: LinearizedBackgroundRoute,
 ): void {
   const attempt = getAttempt(task, attemptID)
   if (!attempt || task.currentAttemptID !== attemptID) return
@@ -200,7 +200,7 @@ export function scheduleRetryAttempt(
   failedAttemptID: string,
   nextModel: DelegatedModelConfig,
   error?: string,
-  route?: CapturedModelMapRoute,
+  route?: LinearizedBackgroundRoute,
 ): BackgroundTaskAttempt | undefined {
   const failedAttempt = finalizeAttempt(task, failedAttemptID, "error", error)
   if (!failedAttempt || task.currentAttemptID !== failedAttemptID) {

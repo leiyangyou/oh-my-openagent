@@ -83,9 +83,9 @@ import {
 } from "./loop-detector"
 import { ParentWakeNotifier, type ParentWakePromptContext } from "./parent-wake-notifier"
 import {
-  assertAdmissionRevisionProgress,
   type BackgroundRouteResolver,
-  type CapturedModelMapRoute,
+  linearizeBackgroundRoute,
+  type LinearizedBackgroundRoute,
 } from "../model-map"
 import type { PendingParentWake } from "./parent-wake-dedupe"
 import { registerManagerForCleanup, unregisterManagerForCleanup } from "./process-cleanup"
@@ -777,7 +777,7 @@ export class BackgroundManager {
     item.task.admissionKey = undefined
   }
 
-  private applyAdmittedRoute(item: QueueItem, route: CapturedModelMapRoute): void {
+  private applyAdmittedRoute(item: QueueItem, route: LinearizedBackgroundRoute): void {
     pinAttemptRoute(item.task, item.attemptID, route)
     item.input.model = { ...route.model }
     item.input.fallbackChain = route.fallbackChain === undefined
@@ -788,33 +788,20 @@ export class BackgroundManager {
   private async admitQueueItem(item: QueueItem): Promise<boolean> {
     if (item.input.routeIntent === undefined || this.resolveBackgroundRoute === undefined) return true
 
-    let acquiredRawKey = item.rawConcurrencyKey ?? this.getRawConcurrencyKeyFromInput(item.input)
-    let previousTransferredRoute: CapturedModelMapRoute | undefined
+    const initialRawKey = item.rawConcurrencyKey ?? this.getRawConcurrencyKeyFromInput(item.input)
+    const resolvedRoute = await this.resolveBackgroundRoute(item.input.routeIntent)
+    if (resolvedRoute === undefined) return true
 
-    while (!TERMINAL_BACKGROUND_TASK_STATUSES.has(item.task.status)) {
-      const route = await this.resolveBackgroundRoute(item.input.routeIntent)
-      if (route === undefined) return true
-
-      const acquiredKey = this.concurrencyManager.getConcurrencyKey(acquiredRawKey)
-      const resolvedKey = this.concurrencyManager.getConcurrencyKey(route.concurrencyKey)
-      if (acquiredKey === resolvedKey) {
-        this.applyAdmittedRoute(item, route)
-        return true
-      }
-
-      if (previousTransferredRoute !== undefined) {
-        assertAdmissionRevisionProgress(previousTransferredRoute, route)
-      }
-      previousTransferredRoute = route
-      this.releaseTaskCapacity(item.task)
-      this.applyAdmittedRoute(item, route)
-      acquiredRawKey = route.concurrencyKey
-      item.rawConcurrencyKey = acquiredRawKey
-      await this.acquireQueueItemCapacity(item, acquiredRawKey)
-    }
+    const route = linearizeBackgroundRoute(resolvedRoute)
+    this.applyAdmittedRoute(item, route)
+    const acquiredKey = this.concurrencyManager.getConcurrencyKey(initialRawKey)
+    const resolvedKey = this.concurrencyManager.getConcurrencyKey(route.concurrencyKey)
+    if (acquiredKey === resolvedKey) return true
 
     this.releaseTaskCapacity(item.task)
-    return false
+    item.rawConcurrencyKey = route.concurrencyKey
+    await this.acquireQueueItemCapacity(item, route.concurrencyKey)
+    return !TERMINAL_BACKGROUND_TASK_STATUSES.has(item.task.status)
   }
 
   private async startTask(item: QueueItem): Promise<void> {

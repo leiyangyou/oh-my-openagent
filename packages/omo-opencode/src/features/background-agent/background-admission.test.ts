@@ -82,7 +82,7 @@ describe("late-bound background admission", () => {
     expect(attemptRoutes(harness.manager.getTask(task.id) ?? task)[0]).toMatchObject({ source: "explicit", scope: "explicit" })
   })
 
-  test("#given repeated map changes during transfer #when admission settles #then exactly one attempt starts on the latest observed revision", async () => {
+  test("#given the route changes after admission linearizes #when final capacity is acquired #then exactly one attempt starts on the first observed revision", async () => {
     const revisions = [
       route({ model: { providerID: "mapped", modelID: "revision-one" }, revision: 1 }),
       route({ model: { providerID: "mapped", modelID: "revision-two" }, revision: 2 }),
@@ -100,8 +100,9 @@ describe("late-bound background admission", () => {
 
     const stored = harness.manager.getTask(task.id) ?? task
     expect(harness.prompts).toHaveLength(1)
-    expect(harness.prompts[0]?.model?.modelID).toBe("revision-two")
+    expect(harness.prompts[0]?.model?.modelID).toBe("revision-one")
     expect(stored.attempts).toHaveLength(1)
-    expect(attemptRoutes(stored)[0]).toMatchObject({ revision: 2 })
+    expect(attemptRoutes(stored)[0]).toMatchObject({ revision: 1 })
+    expect(index).toBe(1)
   })
 })

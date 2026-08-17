@@ -1,7 +1,7 @@
 import type { FallbackEntry } from "../../shared/model-requirements"
 import type { DelegatedModelConfig } from "../../shared/model-resolution-types"
 import type { SessionPermissionRule } from "../../shared/question-denied-session-permission"
-import type { CapturedModelMapRoute, ModelMapLaunchIntent } from "../model-map"
+import type { LinearizedBackgroundRoute, ModelMapLaunchIntent } from "../model-map"
 
 export type BackgroundTaskStatus =
   | "pending"
@@ -40,7 +40,7 @@ export interface BackgroundTaskAttempt {
   error?: string
   startedAt?: Date
   completedAt?: Date
-  route?: CapturedModelMapRoute
+  route?: LinearizedBackgroundRoute
   concurrencyKey?: string
 }
 
@@ -74,7 +74,7 @@ export interface BackgroundTask {
   concurrencyGroup?: string
   admissionKey?: string
   routeIntent?: ModelMapLaunchIntent
-  route?: CapturedModelMapRoute
+  route?: LinearizedBackgroundRoute
   /** Parent session's agent name for notification */
   parentAgent?: string
   /** Parent session's tool restrictions for notification prompts */
