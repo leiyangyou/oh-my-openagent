@@ -66,3 +66,11 @@ Commit boundaries will follow the repository's semantic English style and pair i
 5. Reviewer-readable QA/gate evidence and final ledger.
 
 The exact groups will be recalculated from the final touched-file set before staging. No commit will mix team-mode or PR 3 work.
+
+## Adversarial Remediation
+
+1. Add a deterministic sustained-revision test whose resolver produces a different route on every invocation and races a prompt signal against a second resolution signal. Current code must lose to the second resolution without timers; fixed code must prompt after one resolution.
+2. Define admission linearization as the single route resolution after the initial queued capacity wait. Pin that immutable route before any stale-key transfer, release the initial key once, and acquire the pinned route key without resolving again.
+3. Count release/acquire effects in tests so the initial stale key and final pinned key each have exactly one ownership lifecycle. Re-run cancellation, start-error, duplicate-prompt, and unchanged normalized-key FIFO coverage.
+4. Sanitize committed evidence whitespace, retain only claims backed by route/attempt metadata and reduced provider observations, and regenerate final-head inventory and cleanup receipts.
+5. Run focused and scoped suites, twenty repeated race runs, typecheck, build, Bun 1.3.12 Codex tests, pinned root fail-fast, and an exact `origin/dev` comparison for the unchanged beta installer mismatch.
