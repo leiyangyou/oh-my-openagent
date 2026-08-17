@@ -167,6 +167,19 @@ export function createDelegateTask(options: DelegateTaskToolOptions): ToolDefini
         fallbackChain = resolution.fallbackChain
         maxPromptTokens = resolution.maxPromptTokens
 
+        const mappedRoute = await options.modelMapController?.resolve({
+          baseModel: categoryModel,
+          fallbackChain,
+          key: delegateTaskArgs.category,
+          kind: "category",
+          sessionID: ctx.sessionID,
+        })
+        if (mappedRoute !== undefined) {
+          categoryModel = mappedRoute.model
+          fallbackChain = mappedRoute.fallbackChain === undefined ? fallbackChain : [...mappedRoute.fallbackChain]
+          actualModel = mappedRoute.concurrencyKey
+        }
+
         const isRunInBackgroundExplicitlyFalse = isExplicitSyncRun(delegateTaskArgs.run_in_background)
 
         log("[task] unstable agent detection", {
@@ -201,6 +214,17 @@ export function createDelegateTask(options: DelegateTaskToolOptions): ToolDefini
         agentToUse = resolution.agentToUse
         categoryModel = resolution.categoryModel
         fallbackChain = resolution.fallbackChain
+        const mappedRoute = await options.modelMapController?.resolve({
+          baseModel: categoryModel,
+          fallbackChain,
+          key: agentToUse,
+          kind: "agent",
+          sessionID: ctx.sessionID,
+        })
+        if (mappedRoute !== undefined) {
+          categoryModel = mappedRoute.model
+          fallbackChain = mappedRoute.fallbackChain === undefined ? fallbackChain : [...mappedRoute.fallbackChain]
+        }
       }
 
       const systemContent = buildSystemContent({

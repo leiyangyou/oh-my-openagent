@@ -2405,7 +2405,7 @@ describe("sisyphus-task", () => {
       expect(result).toContain("registered")
     })
 
-     test("sync mode passes category model to prompt", async () => {
+     test("#given an active model map #when category work dispatches #then the category route replaces the base model", async () => {
        // given
        const { createDelegateTask } = require("./tools")
        let promptBody: CapturedPromptBody = {}
@@ -2432,12 +2432,29 @@ describe("sisyphus-task", () => {
          app: { agents: async () => ({ data: [] }) },
        }
 
-      const tool = createDelegateTask({
-        manager: mockManager,
-        client: mockClient,
-        userCategories: {
-          "custom-cat": { model: "provider/custom-model" }
-        }
+       const resolve = mock(async () => ({
+         concurrencyKey: "mapped/category-model",
+         mappedKey: "custom-cat",
+         model: { providerID: "mapped", modelID: "category-model" },
+         presetName: "quality",
+         revision: 4,
+         scope: "session" as const,
+         source: "model-map" as const,
+       }))
+       const tool = createDelegateTask({
+         manager: mockManager,
+         client: mockClient,
+         userCategories: {
+           "custom-cat": { model: "provider/custom-model" }
+         },
+         modelMapController: {
+           clear: async () => {},
+           deleteSession: () => {},
+           list: () => [],
+           resolve,
+           show: async () => undefined,
+           use: async () => {},
+         },
       })
 
       const toolContext = {
@@ -2457,10 +2474,15 @@ describe("sisyphus-task", () => {
       }, toolContext)
 
       // then
-      expect(promptBody.model).toEqual({
-        providerID: "provider",
-        modelID: "custom-model"
-      })
+       expect(resolve).toHaveBeenCalledWith(expect.objectContaining({
+         key: "custom-cat",
+         kind: "category",
+         sessionID: "parent",
+       }))
+       expect(promptBody.model).toEqual({
+         providerID: "mapped",
+         modelID: "category-model"
+       })
     }, { timeout: 20000 })
   })
 

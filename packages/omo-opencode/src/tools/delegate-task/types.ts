@@ -2,6 +2,7 @@ import type { BackgroundManager } from "../../features/background-agent"
 import type { CategoriesConfig, GitMasterConfig, BrowserAutomationProvider, AgentOverrides, SisyphusAgentConfig } from "../../config/schema"
 import type { ModelFallbackControllerAccessor } from "../../hooks/model-fallback"
 import type { LoadedSkill } from "../../features/opencode-skill-loader/types"
+import type { ModelMapController } from "../../features/model-map"
 import type { SessionPromptAsyncData, SessionPromptData, SessionStatusData } from "@opencode-ai/sdk"
 import type {
   AvailableCategory,
@@ -111,6 +112,7 @@ export interface DelegateTaskToolOptions {
   agentOverrides?: AgentOverrides
   sisyphusAgentConfig?: SisyphusAgentConfig
   modelFallbackControllerAccessor?: ModelFallbackControllerAccessor
+  modelMapController?: ModelMapController
   onSyncSessionCreated?: (event: SyncSessionCreatedEvent) => Promise<void>
   syncPollTimeoutMs?: number
   /** OpenCode native skill accessor for skills registered via config.skills.paths. Same shape as SkillLoadOptions.nativeSkills. */
