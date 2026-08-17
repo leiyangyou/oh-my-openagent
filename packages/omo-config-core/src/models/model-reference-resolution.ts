@@ -7,6 +7,7 @@ import type {
   OmoFallbackModels,
   OmoModelCatalog,
   OmoModelCatalogEntry,
+  OmoModelPresets,
   OmoReasoning,
 } from "../schema"
 import { findModelCatalogCycles } from "./model-catalog-cycles"
@@ -130,6 +131,36 @@ function cycleDiagnostics(catalog: OmoModelCatalog | undefined): readonly OmoMod
   }))
 }
 
+function resolveModelPresets(
+  presets: OmoModelPresets | undefined,
+  catalog: OmoModelCatalog | undefined,
+  cycleNames: ReadonlySet<string>,
+): OmoModelPresets | undefined {
+  if (presets === undefined) return undefined
+
+  return Object.fromEntries(Object.entries(presets).map(([name, preset]) => [
+    name,
+    {
+      ...(preset.agents === undefined
+        ? {}
+        : {
+            agents: Object.fromEntries(Object.entries(preset.agents).map(([key, route]) => [
+              key,
+              resolveModelEntry(route, catalog, cycleNames),
+            ])),
+          }),
+      ...(preset.categories === undefined
+        ? {}
+        : {
+            categories: Object.fromEntries(Object.entries(preset.categories).map(([key, route]) => [
+              key,
+              resolveModelEntry(route, catalog, cycleNames),
+            ])),
+          }),
+    },
+  ]))
+}
+
 export function resolveModelReferences(view: OmoConfig): ResolveModelReferencesResult {
   const diagnostics = cycleDiagnostics(view.models)
   const cycleNames = new Set<string>()
@@ -149,6 +180,7 @@ export function resolveModelReferences(view: OmoConfig): ResolveModelReferencesR
       name,
       resolveCategoryDefinition(definition, view.models, cycleNames),
     ]))
+  const modelPresets = resolveModelPresets(view.model_presets, view.models, cycleNames)
 
   return {
     diagnostics,
@@ -156,6 +188,7 @@ export function resolveModelReferences(view: OmoConfig): ResolveModelReferencesR
       ...view,
       ...(agents === undefined ? {} : { agents }),
       ...(categories === undefined ? {} : { categories }),
+      ...(modelPresets === undefined ? {} : { model_presets: modelPresets }),
     },
   }
 }
