@@ -1,4 +1,5 @@
 import type { ModelMapController, ModelMapScope, ModelMapSelection } from "./types"
+import { UnknownModelPresetError } from "./errors"
 
 export class ModelMapCommandError extends Error {
   override readonly name = "ModelMapCommandError"
@@ -15,6 +16,7 @@ export type ModelMapCommand =
   | { readonly kind: "clear"; readonly scope: ModelMapScope }
 
 export type ModelMapCommandResult =
+  | { readonly action: "error"; readonly code: "unknown_preset"; readonly message: string }
   | { readonly action: "list"; readonly names: readonly string[] }
   | { readonly action: "show"; readonly selection?: ModelMapSelection }
   | { readonly action: "use"; readonly name: string; readonly scope: ModelMapScope }
@@ -67,8 +69,15 @@ export async function executeModelMapCommand(
       return selection === undefined ? { action: "show" } : { action: "show", selection }
     }
     case "use":
-      await controller.use({ name: command.name, scope: command.scope, sessionID })
-      return { action: "use", name: command.name, scope: command.scope }
+      try {
+        await controller.use({ name: command.name, scope: command.scope, sessionID })
+        return { action: "use", name: command.name, scope: command.scope }
+      } catch (error) {
+        if (error instanceof UnknownModelPresetError) {
+          return { action: "error", code: "unknown_preset", message: error.message }
+        }
+        throw error
+      }
     case "clear":
       await controller.clear({ scope: command.scope, sessionID })
       return { action: "clear", scope: command.scope }
