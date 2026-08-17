@@ -48,6 +48,7 @@ export function createAdmissionHarness(
   concurrencyConfig: { readonly defaultConcurrency?: number; readonly providerConcurrency?: Record<string, number> } = {
     defaultConcurrency: 1,
   },
+  onPrompt?: (request: PromptRequest) => void,
 ): AdmissionHarness {
   const prompts: PromptRequest[] = []
   let sessionNumber = 0
@@ -57,7 +58,9 @@ export function createAdmissionHarness(
       create: async () => ({ data: { id: `ses_admission_${++sessionNumber}` } }),
       get: async () => ({ data: { directory: "/tmp/modelmap-background-admission" } }),
       promptAsync: async (input: { readonly body?: PromptRequest }) => {
-        prompts.push(input.body ?? {})
+        const request = input.body ?? {}
+        prompts.push(request)
+        onPrompt?.(request)
         return { data: true }
       },
       status: async () => ({ data: {} }),

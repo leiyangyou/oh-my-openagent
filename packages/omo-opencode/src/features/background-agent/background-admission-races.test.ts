@@ -17,12 +17,61 @@ afterEach(() => {
 })
 
 describe("background admission ownership races", () => {
+  test("#given sustained route revisions #when the first queued key admits #then one resolved attempt route linearizes before another revision can starve its prompt", async () => {
+    let resolutionCount = 0
+    let signalSecondResolution: (() => void) | undefined
+    let signalPrompt: (() => void) | undefined
+    const secondResolution = new Promise<void>((resolve) => {
+      signalSecondResolution = resolve
+    })
+    const prompted = new Promise<void>((resolve) => {
+      signalPrompt = resolve
+    })
+    const harness = createAdmissionHarness(async () => {
+      const revision = ++resolutionCount
+      if (revision === 2) signalSecondResolution?.()
+      return route({
+        model: { providerID: `provider-${revision}`, modelID: `model-${revision}` },
+        revision,
+      })
+    }, { defaultConcurrency: 1 }, () => signalPrompt?.())
+    harnesses.push(harness)
+    const task = await harness.launch(launchInput({
+      id: "sustained-revisions",
+      model: { providerID: "base", modelID: "model" },
+      routeIntent: intent({ model: { providerID: "base", modelID: "model" } }),
+    }))
+
+    try {
+      const outcome = await Promise.race([
+        prompted.then(() => "prompted" as const),
+        secondResolution.then(() => "resolved-again" as const),
+      ])
+      expect(outcome).toBe("prompted")
+      expect(resolutionCount).toBe(1)
+    } finally {
+      await harness.manager.cancelTask(task.id, { abortSession: false, skipNotification: true })
+    }
+  })
+
   test("#given a late route with a different key #when transfer completes #then old capacity is released and new capacity is acquired once", async () => {
     const harness = createAdmissionHarness(async () => route({
       model: { providerID: "new-provider", modelID: "new-model" },
       revision: 1,
     }))
     harnesses.push(harness)
+    const acquisitions: string[] = []
+    const releases: string[] = []
+    const acquire = harness.concurrency.acquire.bind(harness.concurrency)
+    const release = harness.concurrency.release.bind(harness.concurrency)
+    harness.concurrency.acquire = async (model, taskId, onAcquired) => acquire(model, taskId, (key) => {
+      acquisitions.push(key)
+      onAcquired?.(key)
+    })
+    harness.concurrency.release = (model) => {
+      releases.push(model)
+      release(model)
+    }
     const task = await harness.launch(launchInput({
       id: "transfer",
       model: { providerID: "old-provider", modelID: "old-model" },
@@ -34,16 +83,73 @@ describe("background admission ownership races", () => {
     expect(harness.concurrency.getCount("new-provider/new-model")).toBe(1)
     await harness.manager.cancelTask(task.id, { abortSession: false, skipNotification: true })
     expect(harness.concurrency.getCount("new-provider/new-model")).toBe(0)
+    expect(acquisitions).toEqual(["old-provider/old-model", "new-provider/new-model"])
+    expect(releases).toEqual(["old-provider/old-model", "new-provider/new-model"])
   })
 
-  test("#given cancellation while a transferred task waits #when both reservations clear #then no capacity leaks or duplicate start occur", async () => {
+  test("#given route resolution fails after initial acquisition #when admission aborts #then initial capacity releases once without a prompt", async () => {
+    let signalRelease: (() => void) | undefined
+    const capacityReleased = new Promise<void>((resolve) => {
+      signalRelease = resolve
+    })
+    const harness = createAdmissionHarness(async () => {
+      throw new Error("route resolution failed")
+    })
+    harnesses.push(harness)
+    const releases: string[] = []
+    const release = harness.concurrency.release.bind(harness.concurrency)
+    harness.concurrency.release = (model) => {
+      releases.push(model)
+      release(model)
+      signalRelease?.()
+    }
+    const task = await harness.launch(launchInput({
+      id: "resolution-error",
+      model: { providerID: "base", modelID: "error" },
+      routeIntent: intent({ model: { providerID: "base", modelID: "error" } }),
+    }))
+
+    await capacityReleased
+
+    expect(harness.prompts).toHaveLength(0)
+    expect(releases).toEqual(["base/error"])
+    expect(harness.manager.getTask(task.id)?.status).toBe("error")
+  })
+
+  test("#given cancellation after transferred capacity is assigned #when admission has not resumed #then final ownership releases once without a duplicate start", async () => {
     const harness = createAdmissionHarness(async () => route({
       model: { providerID: "target", modelID: "occupied" },
       revision: 1,
     }))
     harnesses.push(harness)
+    let pauseTransferredAcquisition = false
+    let signalTargetAcquired: (() => void) | undefined
+    let signalContinueAcquisition: (() => void) | undefined
+    const targetAcquired = new Promise<void>((resolve) => {
+      signalTargetAcquired = resolve
+    })
+    const continueAcquisition = new Promise<void>((resolve) => {
+      signalContinueAcquisition = resolve
+    })
+    const acquisitions: string[] = []
+    const releases: string[] = []
+    const acquire = harness.concurrency.acquire.bind(harness.concurrency)
+    const release = harness.concurrency.release.bind(harness.concurrency)
+    harness.concurrency.acquire = async (model, taskId, onAcquired) => {
+      await acquire(model, taskId, (key) => {
+        acquisitions.push(key)
+        onAcquired?.(key)
+        if (pauseTransferredAcquisition && model === "target/occupied") signalTargetAcquired?.()
+      })
+      if (pauseTransferredAcquisition && model === "target/occupied") await continueAcquisition
+    }
+    harness.concurrency.release = (model) => {
+      releases.push(model)
+      release(model)
+    }
     const blocker = await harness.launch(launchInput({ id: "target-blocker", model: { providerID: "target", modelID: "occupied" } }))
     await waitFor(() => harness.prompts.length === 1, "the target blocker to start")
+    pauseTransferredAcquisition = true
     const queued = await harness.launch(launchInput({
       id: "cancel-transfer",
       model: { providerID: "old", modelID: "free" },
@@ -51,13 +157,17 @@ describe("background admission ownership races", () => {
     }))
     await waitFor(() => harness.concurrency.getQueueLength("target/occupied") === 1, "the transferred waiter")
 
-    expect(await harness.manager.cancelTask(queued.id, { abortSession: false, skipNotification: true })).toBe(true)
     await harness.manager.cancelTask(blocker.id, { abortSession: false, skipNotification: true })
+    await targetAcquired
+    expect(await harness.manager.cancelTask(queued.id, { abortSession: false, skipNotification: true })).toBe(true)
+    signalContinueAcquisition?.()
 
     expect(harness.prompts).toHaveLength(1)
     expect(harness.concurrency.getCount("old/free")).toBe(0)
     expect(harness.concurrency.getCount("target/occupied")).toBe(0)
     expect(harness.concurrency.getQueueLength("target/occupied")).toBe(0)
+    expect(acquisitions).toEqual(["target/occupied", "old/free", "target/occupied"])
+    expect(releases).toEqual(["old/free", "target/occupied", "target/occupied"])
   })
 
   test("#given an admitted fallback chain #when the map changes before retry #then retry uses the original captured chain", async () => {
