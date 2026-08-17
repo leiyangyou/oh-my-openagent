@@ -6,6 +6,7 @@ import { OmoCodegraphSettingsLayerSchema, OmoCodegraphSettingsSchema } from "./c
 import { OmoHarnessIdSchema, type OmoHarnessId } from "./harness"
 import { OmoMemorySettingsLayerSchema, OmoMemorySettingsSchema } from "./memory"
 import { OmoModelCatalogLayerSchema, OmoModelCatalogSchema } from "./model-catalog"
+import { OmoModelPresetsSchema } from "./model-presets"
 import { OmoTaskSettingsLayerSchema, OmoTaskSettingsSchema } from "./task"
 import { OmoTeamsConfigLayerSchema, OmoTeamsConfigSchema } from "./team"
 import { OmoTelemetrySettingsLayerSchema, OmoTelemetrySettingsSchema } from "./telemetry"
@@ -48,6 +49,8 @@ export const OmoConfigSchema = z.object({
   task: OmoTaskSettingsSchema.optional(),
   teams: OmoTeamsConfigSchema.optional(),
   models: OmoModelCatalogSchema.optional(),
+  model_preset: z.string().min(1).optional(),
+  model_presets: OmoModelPresetsSchema.optional(),
   memory: OmoMemorySettingsSchema.optional(),
   telemetry: OmoTelemetrySettingsSchema.optional(),
   "[opencode]": OmoOpenCodeHarnessConfigSchema.optional(),
@@ -66,6 +69,8 @@ export const OmoConfigLayerSchema = z.object({
   task: OmoTaskSettingsLayerSchema.optional(),
   teams: OmoTeamsConfigLayerSchema.optional(),
   models: OmoModelCatalogLayerSchema.optional(),
+  model_preset: z.string().min(1).optional(),
+  model_presets: OmoModelPresetsSchema.optional(),
   memory: OmoMemorySettingsLayerSchema.optional(),
   telemetry: OmoTelemetrySettingsLayerSchema.optional(),
   "[opencode]": OmoOpenCodeHarnessConfigSchema.optional(),

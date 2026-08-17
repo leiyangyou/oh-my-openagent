@@ -1,6 +1,7 @@
 import { describe, expect, mock, test } from "bun:test"
 import { unsafeTestValue } from "../../../../test-support/unsafe-test-value"
 
+import { executeModelMapCommand, UnknownModelPresetError } from "../features/model-map"
 import { handleGoalMessage } from "./chat-message/loop-commands"
 import {
   consumeNativeGoalCommandMarker,
@@ -21,6 +22,56 @@ function createMockGoal() {
 }
 
 describe("createCommandExecuteBeforeHandler", () => {
+  test("#given native /modelmap #when command.execute.before runs #then the controller result is emitted as structured synthetic output", async () => {
+    const execute = mock(async () => ({ action: "list" as const, names: ["quality"] }))
+    const handler = createCommandExecuteBeforeHandler(unsafeTestValue({
+      directory: process.cwd(),
+      hooks: {},
+      modelMapCommand: { execute },
+    }))
+    const output = { parts: [] }
+
+    await handler({ command: "modelmap", sessionID: "ses-map", arguments: "list" }, output)
+
+    expect(execute).toHaveBeenCalledWith("list", "ses-map")
+    expect(output.parts).toEqual([{
+      type: "text",
+      text: '{"action":"list","names":["quality"]}',
+      synthetic: true,
+      modelMap: true,
+    }])
+  })
+
+  test("#given a missing preset #when native /modelmap use runs #then a deterministic typed command error is emitted", async () => {
+    const controller = unsafeTestValue({
+      clear: async () => {},
+      deleteSession: () => {},
+      list: () => [],
+      resolve: async () => undefined,
+      show: async () => undefined,
+      use: async ({ name }: { readonly name: string }) => {
+        throw new UnknownModelPresetError(name)
+      },
+    })
+    const handler = createCommandExecuteBeforeHandler(unsafeTestValue({
+      directory: process.cwd(),
+      hooks: {},
+      modelMapCommand: {
+        execute: (argumentsText: string, sessionID: string) => executeModelMapCommand(controller, argumentsText, sessionID),
+      },
+    }))
+    const output = { parts: [] }
+
+    await handler({ command: "modelmap", sessionID: "ses-map", arguments: "use missing" }, output)
+
+    expect(output.parts).toEqual([{
+      type: "text",
+      text: '{"action":"error","code":"unknown_preset","message":"Unknown model preset \\"missing\\""}',
+      synthetic: true,
+      modelMap: true,
+    }])
+  })
+
   test("#given stopped session and /start-work #when command.execute.before runs #then clear is called", async () => {
     // given
     const clear = mock(() => {})

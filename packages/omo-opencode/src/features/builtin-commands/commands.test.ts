@@ -17,6 +17,14 @@ afterEach(() => {
 })
 
 describe("loadBuiltinCommands", () => {
+  test("#given built-in command discovery #when loading commands #then modelmap is registered and disableable", () => {
+    const commands = loadBuiltinCommands()
+    const disabled = loadBuiltinCommands(["modelmap"])
+
+    expect(commands.modelmap.name).toBe("modelmap")
+    expect(disabled.modelmap).toBeUndefined()
+  })
+
   test("should include handoff command in loaded commands", () => {
     //#given
     const disabledCommands: BuiltinCommandName[] = []

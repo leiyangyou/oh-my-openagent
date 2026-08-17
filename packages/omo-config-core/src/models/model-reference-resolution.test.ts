@@ -97,6 +97,36 @@ describe("resolveModelReferences", () => {
     expect(result.view.categories?.deep?.fallback_models).toEqual(["openai/gpt-5"])
   })
 
+  test("#given catalog references in model preset routes #when resolved #then route tuning wins and the input stays immutable", () => {
+    const view = OmoConfigSchema.parse({
+      models: {
+        quality: { model: "openai/gpt-5.6-sol", reasoning: "high" },
+      },
+      model_presets: {
+        review: {
+          agents: { oracle: "quality" },
+          categories: {
+            deep: { model: "quality", reasoning: "xhigh", max_tokens: 4096 },
+          },
+        },
+      },
+    })
+    const originalView = structuredClone(view)
+
+    const result = resolveModelReferences(view)
+
+    expect(result.view.model_presets?.review?.agents?.oracle).toEqual({
+      model: "openai/gpt-5.6-sol",
+      reasoning: "high",
+    })
+    expect(result.view.model_presets?.review?.categories?.deep).toEqual({
+      model: "openai/gpt-5.6-sol",
+      reasoning: "xhigh",
+      max_tokens: 4096,
+    })
+    expect(view).toEqual(originalView)
+  })
+
   test("#given a self-referential catalog entry #when resolved #then a cycle diagnostic is returned without hanging", () => {
     // given
     const view = OmoConfigSchema.parse({

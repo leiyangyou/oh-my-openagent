@@ -2405,7 +2405,7 @@ describe("sisyphus-task", () => {
       expect(result).toContain("registered")
     })
 
-     test("sync mode passes category model to prompt", async () => {
+     test("#given an active model map #when category work dispatches #then the category route replaces the base model", async () => {
        // given
        const { createDelegateTask } = require("./tools")
        let promptBody: CapturedPromptBody = {}
@@ -2432,12 +2432,29 @@ describe("sisyphus-task", () => {
          app: { agents: async () => ({ data: [] }) },
        }
 
-      const tool = createDelegateTask({
-        manager: mockManager,
-        client: mockClient,
-        userCategories: {
-          "custom-cat": { model: "provider/custom-model" }
-        }
+       const resolve = mock(async () => ({
+         concurrencyKey: "mapped/category-model",
+         mappedKey: "custom-cat",
+         model: { providerID: "mapped", modelID: "category-model" },
+         presetName: "quality",
+         revision: 4,
+         scope: "session" as const,
+         source: "model-map" as const,
+       }))
+       const tool = createDelegateTask({
+         manager: mockManager,
+         client: mockClient,
+         userCategories: {
+           "custom-cat": { model: "provider/custom-model" }
+         },
+         modelMapController: {
+           clear: async () => {},
+           deleteSession: () => {},
+           list: () => [],
+           resolve,
+           show: async () => undefined,
+           use: async () => {},
+         },
       })
 
       const toolContext = {
@@ -2457,11 +2474,85 @@ describe("sisyphus-task", () => {
       }, toolContext)
 
       // then
-      expect(promptBody.model).toEqual({
-        providerID: "provider",
-        modelID: "custom-model"
-      })
-    }, { timeout: 20000 })
+       expect(resolve).toHaveBeenCalledWith(expect.objectContaining({
+         key: "custom-cat",
+         kind: "category",
+         sessionID: "parent",
+       }))
+       expect(promptBody.model).toEqual({
+         providerID: "mapped",
+         modelID: "category-model"
+       })
+     }, { timeout: 20000 })
+
+     test("#given a display-name direct agent and canonical model map #when work dispatches #then the canonical route replaces the base model", async () => {
+       const { createDelegateTask } = require("./tools")
+       let launchInput: CapturedLaunchInput | undefined
+       const resolve = mock(async (input: { readonly key: string }) => input.key === "hephaestus"
+         ? {
+             concurrencyKey: "mapped/direct-model",
+             mappedKey: "hephaestus",
+             model: { providerID: "mapped", modelID: "direct-model" },
+             presetName: "quality",
+             revision: 5,
+             scope: "session" as const,
+             source: "model-map" as const,
+           }
+         : undefined)
+       const tool = createDelegateTask({
+         manager: {
+           launch: async (input: CapturedLaunchInput) => {
+             launchInput = input
+             return {
+               id: "task-direct-model",
+               sessionId: "ses-direct-model",
+               description: "Direct model test",
+               agent: "Hephaestus - Deep Agent",
+               status: "running",
+             }
+           },
+         },
+         client: {
+           app: {
+             agents: async () => ({
+               data: [{ name: "Hephaestus - Deep Agent", mode: "subagent", model: "openai/gpt-5.5" }],
+             }),
+           },
+           config: { get: async () => ({ data: { model: SYSTEM_DEFAULT_MODEL } }) },
+           session: {
+             get: async () => ({ data: { directory: "/project" } }),
+           },
+         },
+         modelMapController: {
+           clear: async () => {},
+           deleteSession: () => {},
+           list: () => [],
+           resolve,
+           show: async () => undefined,
+           use: async () => {},
+         },
+       })
+
+       await tool.execute({
+         description: "Direct model test",
+         prompt: "test",
+         subagent_type: "Hephaestus - Deep Agent",
+         run_in_background: true,
+         load_skills: [],
+       }, {
+         sessionID: "parent",
+         messageID: "msg",
+         agent: "sisyphus",
+         abort: new AbortController().signal,
+       })
+
+       expect(resolve).toHaveBeenCalledWith(expect.objectContaining({
+         key: "hephaestus",
+         kind: "agent",
+         sessionID: "parent",
+       }))
+       expect(launchInput?.model).toEqual({ providerID: "mapped", modelID: "direct-model" })
+     })
   })
 
   describe("unstable agent forced background mode", () => {

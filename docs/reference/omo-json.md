@@ -100,6 +100,8 @@ No default profiles ship. A profile exists only when you write one under `profil
   "task": {},           // task engine settings
   "teams": {},          // record<string, TeamSpec>
   "models": {},         // record<string, ModelCatalogEntry>, shared model catalog
+  "model_presets": {},  // named agent/category model maps
+  "model_preset": "quality", // selected persistent preset for this layer
   "telemetry": { "enabled": true }, // Senpi telemetry, enabled by default
   "[opencode]": {},     // OpenCode plugin config, freeform (see configuration.md)
   "[senpi]": {},        // Senpi-only overrides, typed base keys
@@ -152,6 +154,30 @@ A record of short name to catalog entry (`schema/model-catalog.ts`). The canonic
 ```
 
 When an agent or category `model` string matches a catalog key, resolution (`models/model-reference-resolution.ts`) swaps in the entry's model id and fills any unset `reasoning` from the entry. Tuning written at the use site always wins. A `[harness]` block (or a profile) can override individual catalog entries for its own view. Catalog cycles are detected and reported as `model_catalog_cycle` diagnostics instead of looping.
+
+### `model_presets` and `model_preset`
+
+`model_presets` defines named maps with separate `agents` and `categories` records. Each route accepts a provider-qualified string or `{ model, reasoning?, temperature?, top_p?, max_tokens? }`. Model catalog names are expanded before dispatch. Provider-specific options are rejected because the delegation model contract cannot carry them.
+
+```jsonc
+{
+  "model_presets": {
+    "quality": {
+      "agents": {
+        "explore": "openai/gpt-5.6-sol"
+      },
+      "categories": {
+        "deep": { "model": "anthropic/claude-opus-5", "reasoning": "max" }
+      }
+    }
+  },
+  "model_preset": "quality"
+}
+```
+
+`model_preset` selects a persistent default in the layer where it is written. A selection in `~/.omo/omo.jsonc` is global; a selection in a project's `.omo/omo.jsonc` is workspace-scoped and wins over global. OpenCode also supports an in-memory session selection through `/modelmap`, inherited dynamically by descendant sessions.
+
+Dispatch precedence is: explicit dispatch model, session preset, workspace preset, global preset, base agent or category model, then its existing fallback chain. Direct-agent delegation reads only `agents`; category delegation reads only `categories`. A missing mapping keeps the base route unchanged.
 
 ### `agents`
 
