@@ -1,0 +1,4 @@
+before|1011
+first matching event: {"type":"server.connected"}
+PASS: SSE /event opened and delivered server.connected
+after|1011
