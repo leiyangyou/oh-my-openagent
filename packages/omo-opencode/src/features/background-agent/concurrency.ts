@@ -13,6 +13,8 @@ interface QueueEntry {
   settled: boolean
 }
 
+export type OnConcurrencyAcquired = (key: string) => void
+
 export class ConcurrencyManager {
   private config?: BackgroundTaskConfig
   private counts: Map<string, number> = new Map()
@@ -52,7 +54,7 @@ export class ConcurrencyManager {
     return model
   }
 
-  async acquire(model: string, taskId?: string): Promise<void> {
+  async acquire(model: string, taskId?: string, onAcquired?: OnConcurrencyAcquired): Promise<void> {
     const key = this.getConcurrencyKey(model)
     const limit = this.getConcurrencyLimit(model)
     if (limit === Infinity) {
@@ -62,6 +64,7 @@ export class ConcurrencyManager {
     const current = this.counts.get(key) ?? 0
     if (current < limit) {
       this.counts.set(key, current + 1)
+      onAcquired?.(key)
       return
     }
 
@@ -73,6 +76,7 @@ export class ConcurrencyManager {
         resolve: () => {
           if (entry.settled) return
           entry.settled = true
+          onAcquired?.(key)
           resolve()
         },
         rawReject: reject,

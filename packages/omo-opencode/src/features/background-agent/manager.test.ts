@@ -3523,6 +3523,7 @@ describe("BackgroundManager - Non-blocking Queue Integration", () => {
         modelId: "gpt-5.6-luna-fast",
         variant: "medium",
         status: "pending",
+        concurrencyKey: "openai/gpt-5.6-luna-fast",
       })
 
       expect(task.status).toBe("pending")

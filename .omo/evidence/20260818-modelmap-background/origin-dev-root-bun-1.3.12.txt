@@ -1,0 +1,35 @@
+bun test v1.3.12 (700fc117)
+
+script/package-layout.test.ts:
+214 |     // when
+215 |     const packedPaths = await packDryRunPaths()
+216 |     const missingRuntimePaths = expectedRuntimePaths.filter((expectedPath) => !packedPaths.has(expectedPath))
+217 |
+218 |     // then
+219 |     expect(missingRuntimePaths).toEqual([])
+                                      ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "dist/cli/index.js",
++   "packages/omo-codex/plugin/components/bootstrap/dist/cli.js",
++   "packages/omo-codex/plugin/components/comment-checker/dist/cli.js",
++   "packages/omo-codex/plugin/components/git-bash/dist/cli.js",
++   "packages/omo-codex/plugin/components/lazycodex-executor-verify/dist/cli.js",
++   "packages/omo-codex/plugin/components/lsp/dist/cli.js",
++   "packages/omo-codex/plugin/components/rules/dist/cli.js",
++   "packages/omo-codex/plugin/components/start-work-continuation/dist/cli.js",
++   "packages/omo-codex/plugin/components/teammode/dist/cli.js",
++   "packages/omo-codex/plugin/components/telemetry/dist/cli.js",
++   "packages/omo-codex/plugin/components/ultrawork/dist/cli.js",
++   "packages/omo-codex/plugin/components/ulw-loop/dist/cli.js",
++ ]
+
+- Expected  - 1
++ Received  + 14
+
+      at <anonymous> (/private/var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/opencode/modelmap-base-compare/script/package-layout.test.ts:219:33)
+(fail) published package layout > #given Codex materialized runtime payloads #when packing package #then every current payload target ships [2.90ms]
+Ran 263 tests across 56 files. [17.60s]
+Bailed out after 1 failure

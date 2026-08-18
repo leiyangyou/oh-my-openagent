@@ -1,0 +1,140 @@
+iteration=1
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [351.00ms]
+iteration=2
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [195.00ms]
+iteration=3
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [202.00ms]
+iteration=4
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [193.00ms]
+iteration=5
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [198.00ms]
+iteration=6
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [203.00ms]
+iteration=7
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [192.00ms]
+iteration=8
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [188.00ms]
+iteration=9
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [196.00ms]
+iteration=10
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [193.00ms]
+iteration=11
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [188.00ms]
+iteration=12
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [187.00ms]
+iteration=13
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [193.00ms]
+iteration=14
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [194.00ms]
+iteration=15
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [214.00ms]
+iteration=16
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [191.00ms]
+iteration=17
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [196.00ms]
+iteration=18
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [196.00ms]
+iteration=19
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [196.00ms]
+iteration=20
+bun test v1.3.12 (700fc117)
+
+ 6 pass
+ 0 fail
+ 20 expect() calls
+Ran 6 tests across 1 file. [189.00ms]

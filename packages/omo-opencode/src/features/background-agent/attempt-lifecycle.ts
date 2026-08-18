@@ -1,4 +1,5 @@
 import type { DelegatedModelConfig } from "../../shared/model-resolution-types"
+import type { LinearizedBackgroundRoute } from "../model-map"
 import type { BackgroundTask, BackgroundTaskAttempt, BackgroundTaskStatus } from "./types"
 
 type TerminalAttemptStatus = Extract<BackgroundTaskStatus, "completed" | "error" | "cancelled" | "interrupt">
@@ -81,16 +82,23 @@ export function projectTaskFromCurrentAttempt(task: BackgroundTask): BackgroundT
   task.completedAt = currentAttempt.completedAt
   task.error = currentAttempt.error
   task.model = toTaskModel(currentAttempt)
+  task.route = currentAttempt.route
+  task.concurrencyKey = currentAttempt.concurrencyKey
 
   return task
 }
 
-export function startAttempt(task: BackgroundTask, model: DelegatedModelConfig | undefined): BackgroundTaskAttempt {
+export function startAttempt(
+  task: BackgroundTask,
+  model: DelegatedModelConfig | undefined,
+  route?: LinearizedBackgroundRoute,
+): BackgroundTaskAttempt {
   const attempt: BackgroundTaskAttempt = {
     attemptId: `att_${crypto.randomUUID().slice(0, 8)}`,
     attemptNumber: (task.attempts?.length ?? 0) + 1,
     ...toAttemptModel(model),
     status: "pending",
+    ...(route === undefined ? {} : { route }),
   }
 
   task.attempts = [...(task.attempts ?? []), attempt]
@@ -101,8 +109,40 @@ export function startAttempt(task: BackgroundTask, model: DelegatedModelConfig |
   task.completedAt = undefined
   task.error = undefined
   task.model = model
+  task.route = route
+  task.concurrencyKey = undefined
 
   return attempt
+}
+
+export function setAttemptConcurrencyKey(
+  task: BackgroundTask,
+  attemptID: string,
+  concurrencyKey: string | undefined,
+): void {
+  const attempt = getAttempt(task, attemptID)
+  if (!attempt || task.currentAttemptID !== attemptID) return
+  attempt.concurrencyKey = concurrencyKey
+  task.concurrencyKey = concurrencyKey
+}
+
+export function pinAttemptRoute(
+  task: BackgroundTask,
+  attemptID: string,
+  route: LinearizedBackgroundRoute,
+): void {
+  const attempt = getAttempt(task, attemptID)
+  if (!attempt || task.currentAttemptID !== attemptID) return
+  attempt.route = route
+  attempt.providerId = route.model.providerID
+  attempt.modelId = route.model.modelID
+  attempt.variant = route.model.variant
+  task.route = route
+  task.model = { ...route.model }
+  task.fallbackChain = route.fallbackChain === undefined ? undefined : route.fallbackChain.map((entry) => ({
+    ...entry,
+    providers: [...entry.providers],
+  }))
 }
 
 export function bindAttemptSession(
@@ -160,13 +200,14 @@ export function scheduleRetryAttempt(
   failedAttemptID: string,
   nextModel: DelegatedModelConfig,
   error?: string,
+  route?: LinearizedBackgroundRoute,
 ): BackgroundTaskAttempt | undefined {
   const failedAttempt = finalizeAttempt(task, failedAttemptID, "error", error)
   if (!failedAttempt || task.currentAttemptID !== failedAttemptID) {
     return undefined
   }
 
-  return startAttempt(task, nextModel)
+  return startAttempt(task, nextModel, route)
 }
 
 export function findAttemptBySession(task: BackgroundTask, sessionID: string): BackgroundTaskAttempt | undefined {

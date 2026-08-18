@@ -13,6 +13,7 @@ import {
 import { transformModelForProvider } from "../../shared/provider-model-id-transform"
 import { abortWithTimeout } from "./abort-with-timeout"
 import { ensureCurrentAttempt, scheduleRetryAttempt } from "./attempt-lifecycle"
+import { captureFallbackAttemptRoute } from "../model-map"
 
 export class TeamModeFallbackError extends Error {
   constructor(message: string) {
@@ -166,8 +167,11 @@ export async function tryFallbackRetry(args: {
   }
   task.attemptCount = selectedAttemptCount
   const failedAttemptID = ensureCurrentAttempt(task, previousModel).attemptId
+  const nextRoute = task.route === undefined
+    ? undefined
+    : captureFallbackAttemptRoute(task.route, nextModel)
   const nextAttempt = failedAttemptID
-    ? scheduleRetryAttempt(task, failedAttemptID, nextModel, errorInfo.message)
+    ? scheduleRetryAttempt(task, failedAttemptID, nextModel, errorInfo.message, nextRoute)
     : undefined
   if (!nextAttempt) {
     return false

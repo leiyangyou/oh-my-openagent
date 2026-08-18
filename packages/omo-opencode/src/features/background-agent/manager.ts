@@ -42,6 +42,8 @@ import {
   finalizeAttempt,
   findAttemptBySession,
   getCurrentAttempt,
+  pinAttemptRoute,
+  setAttemptConcurrencyKey,
   startAttempt,
 } from "./attempt-lifecycle"
 import {
@@ -80,6 +82,11 @@ import {
   resolveCircuitBreakerSettings,
 } from "./loop-detector"
 import { ParentWakeNotifier, type ParentWakePromptContext } from "./parent-wake-notifier"
+import {
+  type BackgroundRouteResolver,
+  linearizeBackgroundRoute,
+  type LinearizedBackgroundRoute,
+} from "../model-map"
 import type { PendingParentWake } from "./parent-wake-dedupe"
 import { registerManagerForCleanup, unregisterManagerForCleanup } from "./process-cleanup"
 import { removeTaskToastTracking } from "./remove-task-toast-tracking"
@@ -240,6 +247,7 @@ export interface BackgroundManagerConfig {
   enableParentSessionNotifications?: boolean
   modelFallbackControllerAccessor?: ModelFallbackControllerAccessor
   log?: typeof log
+  resolveBackgroundRoute?: BackgroundRouteResolver
 }
 
 export class BackgroundManager {
@@ -278,6 +286,7 @@ export class BackgroundManager {
   private enableParentSessionNotifications: boolean
   private modelFallbackControllerAccessor?: ModelFallbackControllerAccessor
   private logger: typeof log
+  private resolveBackgroundRoute?: BackgroundRouteResolver
   private loggedSessionStatusUnavailable = false
   readonly taskHistory = new TaskHistory()
   private cachedCircuitBreakerSettings?: CircuitBreakerSettings
@@ -304,6 +313,7 @@ export class BackgroundManager {
     this.enableParentSessionNotifications = options?.enableParentSessionNotifications ?? true
     this.modelFallbackControllerAccessor = options?.modelFallbackControllerAccessor
     this.logger = options?.log ?? log
+    this.resolveBackgroundRoute = options.resolveBackgroundRoute
     this.parentWakeNotifier = new ParentWakeNotifier(
       {
         client: this.client,
@@ -459,6 +469,9 @@ export class BackgroundManager {
       startedAt: task.startedAt,
       completedAt: task.completedAt,
       model: task.model,
+      route: task.route,
+      attempts: cloneAttempts(task),
+      currentAttemptID: task.currentAttemptID,
       error: task.error,
       category: task.category,
     }
@@ -603,6 +616,7 @@ export class BackgroundManager {
         parentAgent: input.parentAgent,
         parentTools: input.parentTools,
         model: input.model,
+        routeIntent: input.routeIntent,
         fallbackChain: input.fallbackChain,
         skillContent: input.skillContent,
         sessionPermission: input.sessionPermission,
@@ -675,7 +689,7 @@ export class BackgroundManager {
         }
 
         try {
-          await this.concurrencyManager.acquire(item.rawConcurrencyKey ?? key, item.task.id)
+          await this.acquireQueueItemCapacity(item, item.rawConcurrencyKey ?? key)
         } catch (error) {
           if (item.task.status === "cancelled" || item.task.status === "error" || item.task.status === "interrupt") {
             this.rollbackPreStartDescendantReservation(item.task)
@@ -686,11 +700,16 @@ export class BackgroundManager {
 
         if (item.task.status === "cancelled" || item.task.status === "error" || item.task.status === "interrupt") {
           this.rollbackPreStartDescendantReservation(item.task)
-          this.concurrencyManager.release(key)
+          this.releaseTaskCapacity(item.task)
           continue
         }
 
         try {
+          const admitted = await this.admitQueueItem(item)
+          if (!admitted) {
+            this.rollbackPreStartDescendantReservation(item.task)
+            continue
+          }
           await this.startTask(item)
         } catch (error) {
           log("[background-agent] Error starting task:", error)
@@ -707,8 +726,7 @@ export class BackgroundManager {
           }
 
           if (item.task.concurrencyKey) {
-            this.concurrencyManager.release(item.task.concurrencyKey)
-            item.task.concurrencyKey = undefined
+            this.releaseTaskCapacity(item.task)
           } else {
             this.concurrencyManager.release(key)
           }
@@ -735,6 +753,57 @@ export class BackgroundManager {
     }
   }
 
+  private releaseTaskCapacity(task: BackgroundTask, fallbackKey?: string): void {
+    const ownedKey = task.concurrencyKey ?? fallbackKey
+    if (ownedKey === undefined) return
+    this.concurrencyManager.release(ownedKey)
+    if (task.currentAttemptID) {
+      setAttemptConcurrencyKey(task, task.currentAttemptID, undefined)
+    } else {
+      task.concurrencyKey = undefined
+    }
+  }
+
+  private async acquireQueueItemCapacity(item: QueueItem, rawKey: string): Promise<void> {
+    item.task.admissionKey = rawKey
+    await this.concurrencyManager.acquire(rawKey, item.task.id, (acquiredKey) => {
+      item.task.admissionKey = undefined
+      if (TERMINAL_BACKGROUND_TASK_STATUSES.has(item.task.status)) {
+        this.concurrencyManager.release(acquiredKey)
+        return
+      }
+      setAttemptConcurrencyKey(item.task, item.attemptID, acquiredKey)
+    })
+    item.task.admissionKey = undefined
+  }
+
+  private applyAdmittedRoute(item: QueueItem, route: LinearizedBackgroundRoute): void {
+    pinAttemptRoute(item.task, item.attemptID, route)
+    item.input.model = { ...route.model }
+    item.input.fallbackChain = route.fallbackChain === undefined
+      ? undefined
+      : route.fallbackChain.map((entry) => ({ ...entry, providers: [...entry.providers] }))
+  }
+
+  private async admitQueueItem(item: QueueItem): Promise<boolean> {
+    if (item.input.routeIntent === undefined || this.resolveBackgroundRoute === undefined) return true
+
+    const initialRawKey = item.rawConcurrencyKey ?? this.getRawConcurrencyKeyFromInput(item.input)
+    const resolvedRoute = await this.resolveBackgroundRoute(item.input.routeIntent)
+    if (resolvedRoute === undefined) return true
+
+    const route = linearizeBackgroundRoute(resolvedRoute)
+    this.applyAdmittedRoute(item, route)
+    const acquiredKey = this.concurrencyManager.getConcurrencyKey(initialRawKey)
+    const resolvedKey = this.concurrencyManager.getConcurrencyKey(route.concurrencyKey)
+    if (acquiredKey === resolvedKey) return true
+
+    this.releaseTaskCapacity(item.task)
+    item.rawConcurrencyKey = route.concurrencyKey
+    await this.acquireQueueItemCapacity(item, route.concurrencyKey)
+    return !TERMINAL_BACKGROUND_TASK_STATUSES.has(item.task.status)
+  }
+
   private async startTask(item: QueueItem): Promise<void> {
     const { task, input } = item
     const attemptID = item.attemptID ?? ensureCurrentAttempt(task, input.model).attemptId
@@ -745,7 +814,7 @@ export class BackgroundManager {
       model: input.model,
     })
 
-    const concurrencyKey = this.getConcurrencyKeyFromInput(input)
+    const concurrencyKey = task.concurrencyKey ?? this.getConcurrencyKeyFromInput(input)
 
     const parentSession = await this.client.session.get({
       path: { id: input.parentSessionId },
@@ -790,7 +859,7 @@ export class BackgroundManager {
     if (task.status === "cancelled") {
       clearDelegatedChildSessionBootstrap(sessionID)
       await this.abortSessionWithLogging(sessionID, "cancelled pre-start cleanup")
-      this.concurrencyManager.release(concurrencyKey)
+      this.releaseTaskCapacity(task, concurrencyKey)
       return
     }
 
@@ -807,7 +876,7 @@ export class BackgroundManager {
       if (task.rootSessionId) {
         this.unregisterRootDescendant(task.rootSessionId)
       }
-      this.concurrencyManager.release(concurrencyKey)
+      this.releaseTaskCapacity(task, concurrencyKey)
       return
     }
 
@@ -820,7 +889,7 @@ export class BackgroundManager {
       if (task.rootSessionId) {
         this.unregisterRootDescendant(task.rootSessionId)
       }
-      this.concurrencyManager.release(concurrencyKey)
+      this.releaseTaskCapacity(task, concurrencyKey)
       return
     }
 
@@ -828,7 +897,7 @@ export class BackgroundManager {
       toolCalls: 0,
       lastUpdate: new Date(),
     }
-    task.concurrencyKey = concurrencyKey
+    setAttemptConcurrencyKey(task, attemptID, concurrencyKey)
     task.concurrencyGroup = concurrencyKey
 
     if (task.retryNotification) {
@@ -2374,7 +2443,7 @@ The task was re-queued on a fallback model after a retryable failure.
     const reason = options?.reason
 
     if (task.status === "pending") {
-      const rawKey = this.getRawConcurrencyKeyFromTask(task)
+      const rawKey = task.admissionKey ?? this.getRawConcurrencyKeyFromTask(task)
       const key = this.concurrencyManager.getConcurrencyKey(rawKey)
       const queue = this.queuesByKey.get(key)
       if (queue) {
@@ -2414,8 +2483,7 @@ The task was re-queued on a fallback model after a retryable failure.
     this.taskHistory.record(task.parentSessionId, { id: task.id, sessionID: task.sessionId, agent: task.agent, description: task.description, status: "cancelled", category: task.category, startedAt: task.startedAt, completedAt: task.completedAt })
 
     if (task.concurrencyKey) {
-      this.concurrencyManager.release(task.concurrencyKey)
-      task.concurrencyKey = undefined
+      this.releaseTaskCapacity(task)
     }
 
     const existingTimer = this.completionTimers.get(task.id)

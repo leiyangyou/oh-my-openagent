@@ -1,0 +1,30 @@
+bun test v1.3.7 (ba426210)
+
+packages/omo-opencode/src/features/background-agent/manager.test.ts:
+3514 |       const task = await manager.launch(input)
+3515 |
+3516 |       // then
+3517 |       expect(task.attempts).toHaveLength(1)
+3518 |       expect(task.currentAttemptID).toBe(task.attempts?.[0]?.attemptId)
+3519 |       expect(task.attempts?.[0]).toEqual({
+                                        ^
+error: expect(received).toEqual(expected)
+
+@@ -3,6 +3,6 @@
+    "attemptNumber": 1,
++   "concurrencyKey": "openai/gpt-5.6-luna-fast",
+    "modelId": "gpt-5.6-luna-fast",
+    "providerId": "openai",
++   "route": undefined,
+    "status": "pending",
+
+- Expected  - 0
++ Received  + 2
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-opencode/src/features/background-agent/manager.test.ts:3519:34)
+(fail) BackgroundManager - Non-blocking Queue Integration > launch() returns immediately with pending status > should initialize attempt state for a newly launched task [7.68ms]
+
+ 1332 pass
+ 1 fail
+ 3279 expect() calls
+Ran 1333 tests across 120 files. [30.36s]

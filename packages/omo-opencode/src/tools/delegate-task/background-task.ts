@@ -13,6 +13,7 @@ import { stripAgentListSortPrefix } from "../../shared/agent-display-names"
 import { buildTaskMetadataBlock } from "../../features/tool-metadata-store/task-metadata-contract"
 import { resolveMetadataModel } from "./resolve-metadata-model"
 import { getPersistedBackgroundTaskDescription } from "./background-task-description"
+import type { ModelMapLaunchIntent } from "../../features/model-map"
 
 function registerBackgroundSessionContext(args: {
   sessionId: string
@@ -108,6 +109,7 @@ export async function executeBackgroundTask(
   categoryModel: DelegatedModelConfig | undefined,
   systemContent: string | undefined,
   fallbackChain?: FallbackEntry[],
+  routeIntent?: ModelMapLaunchIntent,
 ): Promise<string> {
   const { manager } = executorCtx
 
@@ -126,6 +128,7 @@ export async function executeBackgroundTask(
       parentAgent: parentContext.agent,
       parentTools: getSessionTools(parentContext.sessionID),
       model: categoryModel,
+      routeIntent,
       fallbackChain,
       skills: args.load_skills.length > 0 ? args.load_skills : undefined,
       skillContent: systemContent,
@@ -178,13 +181,14 @@ export async function executeBackgroundTask(
     if (sessionId) {
       registerBackgroundSessionContext({
         sessionId,
-        fallbackChain,
+        fallbackChain: updatedTask?.fallbackChain ?? fallbackChain,
         category: args.category,
         modelFallbackControllerAccessor: executorCtx.modelFallbackControllerAccessor,
       })
     }
 
-    const resolvedModel = resolveMetadataModel(categoryModel, parentContext.model)
+    const resolvedModel = resolveMetadataModel(updatedTask?.model ?? categoryModel, parentContext.model)
+    const admittedRoute = updatedTask?.route
     const metadata = {
       prompt: args.prompt,
       agent: task.agent,
@@ -197,6 +201,16 @@ export async function executeBackgroundTask(
       ...(sessionId ? { taskId: sessionId, sessionId } : {}),
       backgroundTaskId: task.id,
       ...(resolvedModel ? { model: resolvedModel } : {}),
+      ...(admittedRoute === undefined ? {} : {
+        modelMap: {
+          concurrencyKey: admittedRoute.concurrencyKey,
+          mappedKey: admittedRoute.mappedKey,
+          presetName: admittedRoute.presetName,
+          revision: admittedRoute.revision,
+          scope: admittedRoute.scope,
+          source: admittedRoute.source,
+        },
+      }),
     }
 
     await publishToolMetadata(ctx, {

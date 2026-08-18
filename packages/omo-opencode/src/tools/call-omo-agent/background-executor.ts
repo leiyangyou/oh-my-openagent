@@ -10,6 +10,7 @@ import { getMessageDir } from "./message-dir"
 import { getSessionTools } from "../../shared/session-tools-store"
 import { sanitizeSubagentType } from "../delegate-task/subagent-discovery"
 import { getAgentDisplayName, stripAgentListSortPrefix } from "../../shared/agent-display-names"
+import type { ModelMapLaunchIntent } from "../../features/model-map"
 
 export async function executeBackground(
   args: CallOmoAgentArgs,
@@ -24,6 +25,7 @@ export async function executeBackground(
   client: PluginInput["client"],
   fallbackChain?: FallbackEntry[],
   model?: DelegatedModelConfig,
+  routeIntent?: ModelMapLaunchIntent,
 ): Promise<string> {
   try {
     const messageDir = getMessageDir(toolContext.sessionID)
@@ -55,6 +57,7 @@ export async function executeBackground(
       parentAgent,
       parentTools: getSessionTools(toolContext.sessionID),
       model,
+      routeIntent,
       fallbackChain,
     })
 

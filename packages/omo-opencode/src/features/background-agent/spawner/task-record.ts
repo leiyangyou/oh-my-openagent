@@ -15,6 +15,7 @@ export function buildTaskRecord(input: LaunchInput, id: string, queuedAt: Date):
     parentAgent: input.parentAgent,
     parentTools: input.parentTools,
     model: input.model,
+    routeIntent: input.routeIntent,
     fallbackChain: input.fallbackChain,
     skillContent: input.skillContent,
     sessionPermission: input.sessionPermission,

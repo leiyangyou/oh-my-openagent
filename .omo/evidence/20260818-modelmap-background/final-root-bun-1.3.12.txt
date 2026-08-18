@@ -1,0 +1,371 @@
+bun test v1.3.12 (700fc117)
+
+script/sync-lazycodex-marketplace.test.ts:
+[sync-lazycodex-marketplace] previous-payload reconstruction: skipping missing LSP daemon dist at /var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/omo-sync-prev-source-bcw1Hm/packages/lsp-daemon/dist
+[sync-lazycodex-marketplace] previous-payload reconstruction: skipping missing OMO root CLI dist at /var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/omo-sync-prev-source-bcw1Hm/dist/cli
+[sync-lazycodex-marketplace] previous-payload reconstruction: skipping missing OMO node fallback CLI dist at /var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/omo-sync-prev-source-bcw1Hm/dist/cli-node
+[materialize] wrote 148 frontend reference files from submodules
+[materialize] wrote 148 frontend reference files from submodules
+[materialize] wrote 148 frontend reference files from submodules
+Bundled 780 modules in 71ms
+
+  omo.js  1.17 MB  (entry point)
+
+Bundled 641 modules in 43ms
+
+  omo-task.js  0.86 MB  (entry point)
+
+Bundled 281 modules in 23ms
+
+  omo-member.js  173.24 KB  (entry point)
+
+Bundled 94 modules in 11ms
+
+  omo-memory-mcp.js  96.53 KB  (entry point)
+
+Bundled 90 modules in 12ms
+
+  memory-run-supervisor.mjs  25.98 KB  (entry point)
+
+Bundled 96 modules in 20ms
+
+  omo-init-deep-advisor.js  64.53 KB  (entry point)
+
+Bundled 780 modules in 52ms
+
+  omo.js  1.17 MB  (entry point)
+
+Bundled 641 modules in 37ms
+
+  omo-task.js  0.86 MB  (entry point)
+
+Bundled 281 modules in 22ms
+
+  omo-member.js  173.24 KB  (entry point)
+
+Bundled 94 modules in 13ms
+
+  omo-memory-mcp.js  96.53 KB  (entry point)
+
+Bundled 90 modules in 14ms
+
+  memory-run-supervisor.mjs  25.98 KB  (entry point)
+
+Bundled 96 modules in 21ms
+
+  omo-init-deep-advisor.js  64.53 KB  (entry point)
+
+Bundled 780 modules in 54ms
+
+  omo.js  1.17 MB  (entry point)
+
+Bundled 641 modules in 42ms
+
+  omo-task.js  0.86 MB  (entry point)
+
+Bundled 281 modules in 23ms
+
+  omo-member.js  173.24 KB  (entry point)
+
+Bundled 94 modules in 20ms
+
+  omo-memory-mcp.js  96.53 KB  (entry point)
+
+Bundled 90 modules in 17ms
+
+  memory-run-supervisor.mjs  25.98 KB  (entry point)
+
+Bundled 96 modules in 31ms
+
+  omo-init-deep-advisor.js  64.53 KB  (entry point)
+
+Bundled 780 modules in 53ms
+
+  omo.js  1.17 MB  (entry point)
+
+Bundled 641 modules in 77ms
+
+  omo-task.js  0.86 MB  (entry point)
+
+Bundled 281 modules in 26ms
+
+  omo-member.js  173.24 KB  (entry point)
+
+Bundled 94 modules in 21ms
+
+  omo-memory-mcp.js  96.53 KB  (entry point)
+
+Bundled 90 modules in 12ms
+
+  memory-run-supervisor.mjs  25.98 KB  (entry point)
+
+Bundled 96 modules in 14ms
+
+  omo-init-deep-advisor.js  64.53 KB  (entry point)
+
+Bundled 780 modules in 82ms
+
+  omo.js  1.17 MB  (entry point)
+
+Bundled 641 modules in 47ms
+
+  omo-task.js  0.86 MB  (entry point)
+
+Bundled 281 modules in 70ms
+
+  omo-member.js  173.24 KB  (entry point)
+
+Bundled 94 modules in 12ms
+
+  omo-memory-mcp.js  96.53 KB  (entry point)
+
+Bundled 90 modules in 13ms
+
+  memory-run-supervisor.mjs  25.98 KB  (entry point)
+
+Bundled 96 modules in 12ms
+
+  omo-init-deep-advisor.js  64.53 KB  (entry point)
+
+Bundled 780 modules in 60ms
+
+  omo.js  1.17 MB  (entry point)
+
+Bundled 647 modules in 57ms
+
+  omo-task.js  0.86 MB  (entry point)
+
+Bundled 281 modules in 21ms
+
+  omo-member.js  173.24 KB  (entry point)
+
+Bundled 94 modules in 15ms
+
+  omo-memory-mcp.js  96.53 KB  (entry point)
+
+Bundled 90 modules in 11ms
+
+  memory-run-supervisor.mjs  25.98 KB  (entry point)
+
+Bundled 96 modules in 16ms
+
+  omo-init-deep-advisor.js  64.53 KB  (entry point)
+
+ulw-loop help
+ulw-loop help
+ulw-loop help
+ulw-loop help
+ulw-loop help
+ulw-loop help
+ulw-loop help
+changed
+ulw-loop help
+
+packages/omo-senpi/src/extension/index.test.ts:
+omo-senpi ulw-loop inactive; omo binary not found undefined
+omo-senpi memory component skipped: missing ExtensionAPI capabilities {
+  missing: [ "appendEntry", "registerEntryRenderer" ],
+}
+config-watch skipped: events capability missing undefined
+omo-senpi ulw-loop inactive; omo binary not found undefined
+omo-senpi memory component skipped: missing ExtensionAPI capabilities {
+  missing: [ "appendEntry", "registerEntryRenderer" ],
+}
+config-watch skipped: events capability missing undefined
+
+packages/omo-senpi/src/extension/compose.test.ts:
+omo-senpi component disabled by flag {
+  component: "beta",
+}
+
+packages/senpi-task/src/__adversarial__/chaos-bench.test.ts:
+[chaos] seed=senpi-task-w1-chaos base=2337725802 iterations=200
+[lsp] ignored shutdown request failure during cleanup: LSP server workspace-edit-fixture at /var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/lsp-apply-edit-63BzCk exited with code 0
+
+packages/omo-senpi/src/components/ultrawork/ultrawork-arming.test.ts:
+omo-senpi memory component skipped: missing ExtensionAPI capabilities {
+  missing: [ "appendEntry", "registerEntryRenderer" ],
+}
+config-watch skipped: events capability missing undefined
+omo-senpi ulw-loop status ignored {
+  reason: "non-zero-exit",
+  code: 1,
+}
+omo-senpi memory component skipped: missing ExtensionAPI capabilities {
+  missing: [ "appendEntry", "registerEntryRenderer" ],
+}
+config-watch skipped: events capability missing undefined
+omo-senpi ulw-loop status ignored {
+  reason: "non-zero-exit",
+  code: 1,
+}
+fatal: not a git repository (or any of the parent directories): .git
+fatal: git cat-file: could not get object info
+fatal: git cat-file: could not get object info
+Preparing worktree (new branch 'linked-branch')
+fatal: not a git repository (or any of the parent directories): .git
+fatal: not a git repository (or any of the parent directories): .git
+fatal: not a git repository (or any of the parent directories): .git
+
+packages/omo-senpi/src/components/task/dag-runtime.test.ts:
+DAG runtime subscriber failed 650 |     cleanupRoots.push(cwd)
+651 |     const runner = new ScriptedRunner()
+652 |     const pi = Object.assign(new FakeExtensionAPI(), {
+653 |       rpc: {
+654 |         emit: (name: string) => {
+655 |           if (name === "omo.dag.event") throw new Error("subscriber exploded")
+                                                        ^
+error: subscriber exploded
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.test.ts:655:51)
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:68:13)
+      at forward (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:77:5)
+      at deliverDurableEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:428:5)
+      at publishDurableEvents (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:419:58)
+      at writeCheckpoint (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:87:9)
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:110:21)
+      at withLock (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/store.ts:570:12)
+      at appendPayload (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:90:32)
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/manager.ts:347:13)
+
+DAG runtime subscriber failed 650 |     cleanupRoots.push(cwd)
+651 |     const runner = new ScriptedRunner()
+652 |     const pi = Object.assign(new FakeExtensionAPI(), {
+653 |       rpc: {
+654 |         emit: (name: string) => {
+655 |           if (name === "omo.dag.event") throw new Error("subscriber exploded")
+                                                        ^
+error: subscriber exploded
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.test.ts:655:51)
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:68:13)
+      at forward (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:77:5)
+      at deliverDurableEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:428:5)
+      at publishSchedulerEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:116:65)
+      at deliver (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:238:11)
+      at drain (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:226:13)
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:209:12)
+
+DAG runtime subscriber failed 650 |     cleanupRoots.push(cwd)
+651 |     const runner = new ScriptedRunner()
+652 |     const pi = Object.assign(new FakeExtensionAPI(), {
+653 |       rpc: {
+654 |         emit: (name: string) => {
+655 |           if (name === "omo.dag.event") throw new Error("subscriber exploded")
+                                                        ^
+error: subscriber exploded
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.test.ts:655:51)
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:68:13)
+      at forward (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:77:5)
+      at deliverDurableEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:428:5)
+      at publishSchedulerEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:116:65)
+      at deliver (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:238:11)
+      at drain (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:226:13)
+
+DAG runtime subscriber failed 650 |     cleanupRoots.push(cwd)
+651 |     const runner = new ScriptedRunner()
+652 |     const pi = Object.assign(new FakeExtensionAPI(), {
+653 |       rpc: {
+654 |         emit: (name: string) => {
+655 |           if (name === "omo.dag.event") throw new Error("subscriber exploded")
+                                                        ^
+error: subscriber exploded
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.test.ts:655:51)
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:68:13)
+      at forward (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:77:5)
+      at deliverDurableEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:428:5)
+      at publishSchedulerEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:116:65)
+      at deliver (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:238:11)
+      at drain (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:226:13)
+
+DAG runtime subscriber failed 650 |     cleanupRoots.push(cwd)
+651 |     const runner = new ScriptedRunner()
+652 |     const pi = Object.assign(new FakeExtensionAPI(), {
+653 |       rpc: {
+654 |         emit: (name: string) => {
+655 |           if (name === "omo.dag.event") throw new Error("subscriber exploded")
+                                                        ^
+error: subscriber exploded
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.test.ts:655:51)
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:68:13)
+      at forward (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:77:5)
+      at deliverDurableEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:428:5)
+      at publishSchedulerEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:116:65)
+      at deliver (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:238:11)
+      at drain (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:226:13)
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:209:12)
+
+DAG runtime subscriber failed 650 |     cleanupRoots.push(cwd)
+651 |     const runner = new ScriptedRunner()
+652 |     const pi = Object.assign(new FakeExtensionAPI(), {
+653 |       rpc: {
+654 |         emit: (name: string) => {
+655 |           if (name === "omo.dag.event") throw new Error("subscriber exploded")
+                                                        ^
+error: subscriber exploded
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.test.ts:655:51)
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:68:13)
+      at forward (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:77:5)
+      at deliverDurableEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:428:5)
+      at publishSchedulerEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:116:65)
+      at deliver (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:238:11)
+      at drain (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:226:13)
+
+DAG runtime subscriber failed 650 |     cleanupRoots.push(cwd)
+651 |     const runner = new ScriptedRunner()
+652 |     const pi = Object.assign(new FakeExtensionAPI(), {
+653 |       rpc: {
+654 |         emit: (name: string) => {
+655 |           if (name === "omo.dag.event") throw new Error("subscriber exploded")
+                                                        ^
+error: subscriber exploded
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.test.ts:655:51)
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:68:13)
+      at forward (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:77:5)
+      at deliverDurableEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:428:5)
+      at publishSchedulerEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:116:65)
+      at deliver (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:238:11)
+      at drain (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:226:13)
+
+DAG runtime subscriber failed 650 |     cleanupRoots.push(cwd)
+651 |     const runner = new ScriptedRunner()
+652 |     const pi = Object.assign(new FakeExtensionAPI(), {
+653 |       rpc: {
+654 |         emit: (name: string) => {
+655 |           if (name === "omo.dag.event") throw new Error("subscriber exploded")
+                                                        ^
+error: subscriber exploded
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.test.ts:655:51)
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:68:13)
+      at forward (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:77:5)
+      at deliverDurableEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:428:5)
+      at publishSchedulerEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:116:65)
+      at deliver (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:238:11)
+      at drain (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:226:13)
+
+DAG runtime subscriber failed 650 |     cleanupRoots.push(cwd)
+651 |     const runner = new ScriptedRunner()
+652 |     const pi = Object.assign(new FakeExtensionAPI(), {
+653 |       rpc: {
+654 |         emit: (name: string) => {
+655 |           if (name === "omo.dag.event") throw new Error("subscriber exploded")
+                                                        ^
+error: subscriber exploded
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.test.ts:655:51)
+      at emit (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:68:13)
+      at forward (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-rpc-bridge.ts:77:5)
+      at deliverDurableEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:428:5)
+      at publishSchedulerEvent (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/omo-senpi/src/components/task/dag-runtime.ts:116:65)
+      at deliver (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:238:11)
+      at drain (/Users/leiyang/Workspace/personal/oh-my-openagent-wt/feature-modelmap-background/packages/senpi-task/src/dag/journal.ts:226:13)
+
+
+  ⚙ read_file filePath=/src/index.ts
+
+packages/omo-opencode/src/__tests__/perf/plugin-init.test.ts:
+empty-project: cold=89.5ms warm=[86.6, 82.0] median=86.6ms
+in-tree-fixture: cold=84.6ms warm=[71.2, 66.1] median=71.2ms
+
+packages/omo-opencode/src/hooks/atlas/index.test.ts:
+(fail) atlas hook > session.idle handler (boulder continuation) > should reset prompt failure counter after successful retry beyond backoff window [5001.00ms]
+  ^ this test timed out after 5000ms.
+Ran 14297 tests across 1804 files. [508.52s]
+Bailed out after 1 failure
