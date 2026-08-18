@@ -40,6 +40,8 @@ describe("#given the no-excuse script is executed from an installed ~/.codex-sty
 		mkdirSync(join(callerDir, "node_modules"), { recursive: true })
 		symlinkSync(typescriptPackageDir, join(callerDir, "node_modules", "typescript"), "junction")
 		writeFileSync(join(callerDir, "clean.ts"), "export const answer: number = 42\n")
+		writeFileSync(join(callerDir, "any-parameter.ts"), "export function identity(value: any): unknown { return value }\n")
+		writeFileSync(join(callerDir, "any-property-signature.ts"), "export interface Options { value: any }\n")
 		writeFileSync(join(callerDir, "violating.ts"), "const x = foo as any\nexport default x\n")
 
 		callerWithoutTypescriptDir = join(tempRoot, "caller-without-typescript")
@@ -73,6 +75,26 @@ describe("#given the no-excuse script is executed from an installed ~/.codex-sty
 		expect(result.error).toBeUndefined()
 		expect(result.status).toBe(1)
 		expect(result.stderr).toContain("[no-any-assertion]")
+	}, 60_000)
+
+	test("#when a checked file contains an any parameter #then the annotation violation is reported without crashing", () => {
+		// when no-excuse analyzes a function parameter annotated with any
+		const result = runNoExcuse(callerDir, "any-parameter.ts")
+
+		// then the checker reports the intended rule instead of calling a missing TypeScript predicate
+		expect(result.error).toBeUndefined()
+		expect(result.status).toBe(1)
+		expect(result.stderr).toContain("[no-any-annotation]")
+	}, 60_000)
+
+	test("#when a checked file contains an any property signature #then the annotation violation is reported without crashing", () => {
+		// when no-excuse analyzes an interface property annotated with any
+		const result = runNoExcuse(callerDir, "any-property-signature.ts")
+
+		// then the checker reports the intended rule instead of calling a missing TypeScript predicate
+		expect(result.error).toBeUndefined()
+		expect(result.status).toBe(1)
+		expect(result.stderr).toContain("[no-any-annotation]")
 	}, 60_000)
 
 	test("#when the caller project genuinely lacks typescript #then it fails with a clear error and exit 2", () => {
