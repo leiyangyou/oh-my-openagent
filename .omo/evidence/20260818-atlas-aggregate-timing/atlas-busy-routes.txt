@@ -1,0 +1,7 @@
+bun test v1.3.12 (700fc117)
+
+ 2 pass
+ 73 filtered out
+ 0 fail
+ 2 expect() calls
+Ran 2 tests across 1 file. [380.00ms]
