@@ -1,0 +1,22 @@
+bun test v1.3.12 (700fc117)
+
+packages/shared-skills/skills/programming/scripts/typescript/check-no-excuse-rules.test.ts:
+81 | 		const result = runNoExcuse(callerDir, "any-parameter.ts")
+82 |
+83 | 		// then the checker reports the intended rule instead of calling a missing TypeScript predicate
+84 | 		expect(result.error).toBeUndefined()
+85 | 		expect(result.status).toBe(1)
+86 | 		expect(result.stderr).toContain("[no-any-annotation]")
+                             ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "[no-any-annotation]"
+Received: "231 |         const parent = node.parent\n232 |         // Skip `as any` — already caught by no-any-assertion\n233 |         if (parent && ts.isAsExpression(parent)) {\n234 |           // already handled\n235 |         } else if (parent && (\n236 |           ts.isParameter(parent) ||\n                   ^\nTypeError: ts.isParameter is not a function. (In 'ts.isParameter(parent)', 'ts.isParameter' is undefined)\n      at visit (/private/var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/no-excuse-cache-repro-SBTvEL/.codex/skills/programming/scripts/typescript/check-no-excuse-rules.ts:236:14)\n      at forEachChild (/Users/leiyang/Workspace/personal/oh-my-openagent/.local-ignore/no-excuses-parameter-fix/node_modules/.bun/typescript@7.0.2/node_modules/typescript/dist/api/node/node.generated.js:212:36)\n      at visit (/private/var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/no-excuse-cache-repro-SBTvEL/.codex/skills/programming/scripts/typescript/check-no-excuse-rules.ts:281:10)\n      at forEachNode (/Users/leiyang/Workspace/personal/oh-my-openagent/.local-ignore/no-excuses-parameter-fix/node_modules/.bun/typescript@7.0.2/node_modules/typescript/dist/api/node/node.generated.js:119:28)\n      at forEachChild (/Users/leiyang/Workspace/personal/oh-my-openagent/.local-ignore/no-excuses-parameter-fix/node_modules/.bun/typescript@7.0.2/node_modules/typescript/dist/api/node/node.generated.js:205:46)\n      at visit (/private/var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/no-excuse-cache-repro-SBTvEL/.codex/skills/programming/scripts/typescript/check-no-excuse-rules.ts:281:10)\n      at forEachNode (/Users/leiyang/Workspace/personal/oh-my-openagent/.local-ignore/no-excuses-parameter-fix/node_modules/.bun/typescript@7.0.2/node_modules/typescript/dist/api/node/node.generated.js:119:28)\n      at forEachChild (/Users/leiyang/Workspace/personal/oh-my-openagent/.local-ignore/no-excuses-parameter-fix/node_modules/.bun/typescript@7.0.2/node_modules/typescript/dist/api/node/node.generated.js:205:46)\n      at visit (/private/var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/no-excuse-cache-repro-SBTvEL/.codex/skills/programming/scripts/typescript/check-no-excuse-rules.ts:281:10)\n      at analyzeFile (/private/var/folders/hz/3tk9f1r13wlg8hkh0jv6cpfr0000gn/T/no-excuse-cache-repro-SBTvEL/.codex/skills/programming/scripts/typescript/check-no-excuse-rules.ts:284:3)\n\nBun v1.3.12 (macOS arm64)\n"
+
+      at <anonymous> (/Users/leiyang/Workspace/personal/oh-my-openagent/.local-ignore/no-excuses-parameter-fix/packages/shared-skills/skills/programming/scripts/typescript/check-no-excuse-rules.test.ts:86:25)
+(fail) #given the no-excuse script is executed from an installed ~/.codex-style skill cache > #when a checked file contains an any parameter #then the annotation violation is reported without crashing [146.51ms]
+
+ 3 pass
+ 1 fail
+ 12 expect() calls
+Ran 4 tests across 1 file. [907.00ms]
