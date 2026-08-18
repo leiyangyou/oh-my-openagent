@@ -18,9 +18,9 @@
 - Bun 1.3.12 Codex gate: `final-codex-bun-1.3.12.txt`
 - Live OpenCode verdict: `live/qa-verdict.json`
 - Isolation: `live/isolation-verdict.json`
-- Exact base comparison: `codex-installer-version-branch.txt` and `codex-installer-version-origin-dev.txt`
+- Post-rebase focused, race, wider, package, typecheck, build, Codex, installer, and root gates: `rebase/`
 - Reviewer summary: `QA-SUMMARY.md`
 
 ## Boundary
 
-This claim covers PR 2 late-bound background admission only. No PR 3 scope was started.
+This claim covers PR 2 late-bound background admission rebased onto repaired `origin/dev` at `74ac1401e`. No PR 3 scope was started.
