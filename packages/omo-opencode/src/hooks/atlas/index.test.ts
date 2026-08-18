@@ -22,6 +22,7 @@ import { createToolExecuteAfterHandler } from "./tool-execute-after"
 import { createToolExecuteBeforeHandler } from "./tool-execute-before"
 
 const callerAgentBySession = new Map<string, string>()
+type SessionStatusMock = NonNullable<ReturnType<typeof createOpencodeClient>["session"]["status"]>
 type MockAtlasInput = Parameters<typeof createAtlasHook>[0] & {
   _promptMock: ReturnType<typeof mock>
   _sessionGetMock: ReturnType<typeof mock>
@@ -34,6 +35,7 @@ describe("atlas hook", () => {
   function createMockPluginInput(overrides?: {
     promptMock?: ReturnType<typeof mock>
     sessionGetMock?: ReturnType<typeof mock>
+    statusMock?: SessionStatusMock
   }): MockAtlasInput {
     const promptMock = overrides?.promptMock ?? mock(() => Promise.resolve())
     const sessionGetMock = overrides?.sessionGetMock ?? mock(async ({ path }: { path: { id: string } }) => ({
@@ -42,9 +44,11 @@ describe("atlas hook", () => {
         parentID: path.id.startsWith("ses_") ? "session-1" : "main-session-123",
       },
     }))
+    const statusMock = overrides?.statusMock ?? mock(async () => ({ data: {} }))
     const client = createOpencodeClient({ baseUrl: "http://localhost" })
     Reflect.set(client.session, "get", sessionGetMock)
     Reflect.set(client.session, "messages", mock(async () => ({ data: [] })))
+    Reflect.set(client.session, "status", statusMock)
     Reflect.set(client.session, "prompt", promptMock)
     Reflect.set(client.session, "promptAsync", promptMock)
 
@@ -1326,6 +1330,32 @@ session_id: ses_untrusted_999
       expect(callArgs.body.parts[0].text).toContain("2 remaining")
     }, { timeout: 10_000 })
 
+    test("should suppress continuation when the main session is busy", async () => {
+      // given - boulder state with incomplete plan and a keyed busy status
+      const planPath = join(TEST_DIR, "busy-incomplete-plan.md")
+      writeFileSync(planPath, "# Plan\n- [ ] Task 1")
+      writeBoulderState(TEST_DIR, {
+        active_plan: planPath,
+        started_at: "2026-01-02T10:00:00Z",
+        session_ids: [MAIN_SESSION_ID],
+        plan_name: "busy-incomplete-plan",
+      })
+      const statusMock = mock(async () => ({ data: { [MAIN_SESSION_ID]: { type: "busy" as const } } }))
+      const mockInput = createMockPluginInput({ statusMock })
+      const hook = createTestAtlasHook(mockInput)
+
+      // when
+      await hook.handler({
+        event: {
+          type: "session.idle",
+          properties: { sessionID: MAIN_SESSION_ID },
+        },
+      })
+
+      // then - busy status prevents continuation injection
+      expect(mockInput._promptMock).not.toHaveBeenCalled()
+    })
+
     test("should inject continuation when idle event carries session id in info", async () => {
       // given - boulder state with incomplete plan and nested session event shape
       const planPath = join(TEST_DIR, "test-plan-info-idle.md")
@@ -1527,6 +1557,32 @@ session_id: ses_untrusted_999
 
       // then
       expect(mockInput._promptMock).toHaveBeenCalledTimes(1)
+    })
+
+    test("should suppress completion nudge when the main session is busy", async () => {
+      // given - boulder state with complete plan and a keyed busy status
+      const planPath = join(TEST_DIR, "busy-complete-plan.md")
+      writeFileSync(planPath, "# Plan\n- [x] Task 1")
+      writeBoulderState(TEST_DIR, {
+        active_plan: planPath,
+        started_at: "2026-01-02T10:00:00Z",
+        session_ids: [MAIN_SESSION_ID],
+        plan_name: "busy-complete-plan",
+      })
+      const statusMock = mock(async () => ({ data: { [MAIN_SESSION_ID]: { type: "busy" as const } } }))
+      const mockInput = createMockPluginInput({ statusMock })
+      const hook = createTestAtlasHook(mockInput)
+
+      // when
+      await hook.handler({
+        event: {
+          type: "session.idle",
+          properties: { sessionID: MAIN_SESSION_ID },
+        },
+      })
+
+      // then - busy status prevents completion nudge injection
+      expect(mockInput._promptMock).not.toHaveBeenCalled()
     })
 
     test("should inject completion nudge when mirrored worktree plan is complete even if the main repo plan is stale", async () => {
